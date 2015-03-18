@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+  <![CDATA[
+  #container {
+      padding: 1em;
+      box-sizing: border-box;
+  }
+  #content {
+      width: 100%;
+      height: 100%;
+      -webkit-transition: opacity 0.6s ease-in-out;
+      -moz-transition: opacity 0.6s ease-in-out;
+      -o-transition: opacity 0.6s ease-in-out;
+      transition: opacity 0.6s ease-in-out;
+  }
+  .header {
+      width: 100%;
+      height: 25%;
+      padding-bottom: 1em;
+      display: table;
+      box-sizing: border-box;
+  }
+  .sportLogoContainer {
+      width: 30%;
+      padding-right: 1em;
+      box-sizing: border-box;
+      background-size: 100% 100%;
+  }
+  .sportName {
+      width: 70%;
+  }
+  .sportName, .sportLogoContainer {
+      height: 100%;
+      display: table-cell;
+      vertical-align: middle;
+  }
+  .games {
+      width: 100%;
+      height: 75%;
+  }
+  .stats {
+      width: 100%;
+      height: 15%;
+      display: table;
+  }
+  .status {
+      width: 20%;
+  }
+  .overUnder {
+      width: 80%;
+      text-align: right;
+  }
+  .status, .overUnder {
+      display: table-cell;
+      vertical-align: middle;
+  }
+  .game {
+      display: table;
+      width: 100%;
+      height: 35%;
+      /*padding-bottom: 1em;*/
+  }
+  .home, .visitor {
+      width: 100%;
+      height: 50%;
+      display: table-row;
+  }
+  .visitorName, .homeName {
+      width: 70%;
+      padding: 0 0 0 1em;
+      display: table-cell;
+      vertical-align: middle;
+  }
+  .visitorSpread, .visitorRecord, .homeSpread, .homeRecord {
+      width: 20%;
+      text-align: right;
+      display: table-cell;
+      vertical-align: middle;
+  }
+  .noOdds {
+      width: 100%;
+      text-align: right;
+  }
+  p {
+      margin: 0;
+      padding: 0;
+  }
+  .fadeOut {
+      opacity: 0;
+  }
+  .fadeIn {
+      opacity: 1;
+  }
+  ]]>
+    </Style>
+    <Layout>
+  <![CDATA[
+  <div id="content">
+      <div class="header">
+    <div class="sportLogoContainer"></div>
+    <div class="sportName sport_font-style"></div>
+      </div>
+      <div class="games">
+          <div class="stats">
+        <div class="status game_font-style"></div>
+        <div class="overUnder game_font-style"></div>
+          </div>
+    <div class="game">
+        <div class="visitor">
+      <div class="visitorName team_font-style"></div>
+      <div class="visitorSpread team_font-style"></div>
+      <div class="visitorRecord team_font-style"></div>
+        </div>
+        <div class="home">
+      <div class="homeName team_font-style"></div>
+      <div class="homeSpread team_font-style"></div>
+      <div class="homeRecord team_font-style"></div>
+        </div>
+    </div>
+    <div class="stats">
+        <div class="status game_font-style"></div>
+        <div class="overUnder game_font-style"></div>
+          </div>
+    <div class="game">
+        <div class="visitor">
+      <div class="visitorName team_font-style"></div>
+      <div class="visitorSpread team_font-style"></div>
+      <div class="visitorRecord team_font-style"></div>
+        </div>
+        <div class="home">
+      <div class="homeName team_font-style"></div>
+      <div class="homeSpread team_font-style"></div>
+      <div class="homeRecord team_font-style"></div>
+        </div>
+    </div>
+      </div>
+  </div>
+  ]]>
+    </Layout>
+</Template>

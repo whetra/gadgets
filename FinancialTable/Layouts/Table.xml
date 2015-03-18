@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+	<![CDATA[
+	    /* Conditions */
+	    .changeUpIncrease, .changeDownDecrease, .valuePositivePositive, .valueNegativeNegative {
+		color: green !important;
+	    }
+	    .changeUpDecrease, .changeDownIncrease, .valuePositiveNegative, .valueNegativePositive {
+		color: red !important;
+	    }
+	    
+	    /* Logos and arrows */
+	    .logo img, .arrow img {
+		vertical-align: middle;
+	    }
+	    
+	    /* Disclaimer */
+	    #disclaimer {
+		padding: 0.5em;
+		font-style: italic;
+		font-size: 10px;
+	    }
+	    #disclaimer.top {
+		position: relative;	/* To have rows scroll underneath the disclaimer. */		
+	    }
+	    #disclaimer.top.right {
+		text-align: right;	
+	    }
+	    #disclaimer.bottom {
+		position: absolute;
+		bottom: 0;
+	    }
+	    #disclaimer.bottom.right {
+		right: 0;
+	    }	    
+	]]>
+    </Style>
+    <Layout> 
+	<![CDATA[
+	<div id="disclaimer"></div>
+	<table id="financial" class="page">
+	    <tbody>
+		<!-- The element that has a class of repeat (in this example the tr element) is repeated for every row
+		   that is returned by the data server. There is no need to manually add these elements multiple times. -->
+		<tr class="repeat item">
+		    <!-- Table cells are automatically created based on the Gadget settings. -->
+		</tr>
+	    </tbody>
+	</table>
+	]]>
+    </Layout> 
+</Template>

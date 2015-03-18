@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This gadget uses a licensed copy of JW Player 5.4. If you plan to extend and use this gadget in your own commercial application, you will
+     be required to purchase your own license. -->
+<Module>
+     <ModulePrefs title="Rise Video Gadget" height="400" title_url="http://www.risevision.com/help/gadgets/gadget-help-files/rise-vision-video/">
+	     <!-- "rpc" feature is necessary for communicating with Viewer -->
+	     <Require feature="rpc" />
+	     <!-- "rise-api" feature with "reports_ready" parameter tells Rise Gadget Server that Rise Background Gadget supports sending "ready" event -->
+	     <Optional feature="rise-api">
+		     <Param name="reports_ready" />
+	     </Optional>
+     </ModulePrefs>
+     <!-- Gadget ID (passed to the gadget by Viewer in runtime). This UserPref must have datatype=hidden to prevent it from appearing in iGoogle property editor -->
+     <UserPref name="id" display_name="ID" datatype="hidden" default_value="" />
+     <!-- Preferences specific to the Rise Background Gadget	-->
+     <UserPref name="url" display_name="URL" required="true" />
+     <UserPref name="volume" display_name="Volume (0-100)" default_value="50" required="true" />
+     <UserPref name="autoHide" display_name="Auto Hide Controls?" datatype="bool" default_value="true" />
+     <UserPref name="carryOn" display_name="Carry On?" datatype="bool" />
+     <UserPref name="rsH" display_name="Container Height" datatype="hidden" default_value="200" />
+     <UserPref name="rsW" display_name="Container Width" datatype="hidden" default_value="200" />
+     <Content type="html">
+	  <![CDATA[
+	  <style type="text/css">
+	       body {
+		    background-color: transparent;
+	       }
+		  
+	       #html5 {
+		    background-color: rgb(0, 0, 0);
+		    width: __UP_rsW__px;
+		    height: __UP_rsH__px;
+	       }
+	       
+	       #html5_video {
+		    width: __UP_rsW__px;
+		    height: __UP_rsH__px;
+	       }
+	  </style>
+   
+	  <div id="flash">
+	       Loading the player...
+	  </div>
+	  <div id="html5">
+	       <video id="html5_video" src="" onended="doneEvent()" oncanplay="readyEvent()"></video>
+	  </div>	  
+  
+	  <script type="text/javascript" src="http://c499672.r72.cf2.rackcdn.com/common/BrowserDetect.js"></script>
+	  <script type="text/javascript" src="http://c561770.r70.cf2.rackcdn.com/mediaplayer-5.4/jwplayer.js"></script>
+	  <script type="text/javascript">
+	       var playerError = false;
+	       var prefs = new gadgets.Prefs();
+	       var isLoading = true;
+	       var isHTML5Video = false;
+	       var flash = document.getElementById("flash");
+	       var html5 = document.getElementById("html5");
+	       var html5_video = document.getElementById("html5_video");
+		       
+	       //Initialize the gadget.
+	       function showViewer() {
+		    var id = prefs.getString("id");
+		    var url = prefs.getString("url");
+		    var rsH = prefs.getInt("rsH");
+		    var rsW = prefs.getInt("rsW");
+		    var autoHide = prefs.getBool("autoHide");
+		    var controlbar, volume;
+				    
+		    if (id != null && id != "") {
+			 gadgets.rpc.register("rscmd_play_" + id, play);
+			 gadgets.rpc.register("rscmd_pause_" + id, pause);
+			 gadgets.rpc.register("rscmd_stop_" + id, stop);
+		    }			
+			 
+		    volume = prefs.getInt("volume");
+	  
+		    //Maximum volume is 100.
+		    if (volume > 100) {
+			 volume = 100;
+		    }
+			 
+		    checkVideoType(url);
+		    
+		    //Determine which player to use - HTML5 or Flash.
+		    if (isHTML5Video) {
+			 html5_video.onerror = function(e) {
+			      switch (e.target.error.code) {
+				   case e.target.error.MEDIA_ERR_ABORTED:
+					console.log('You aborted the video playback.');
+					break;
+				   case e.target.error.MEDIA_ERR_NETWORK:
+					console.log('A network error caused the video download to fail part-way.');
+					break;
+				   case e.target.error.MEDIA_ERR_DECODE:
+					console.log('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.');
+					break;
+				   case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+					console.log('The video could not be loaded, either because the server or network failed or because the format is not supported.');
+					break;
+				   default:
+					console.log('An unknown error occurred.');
+					break;
+			      }
+			 }
+			 
+			 html5_video.volume = volume / 100;
+			 
+			 if (autoHide) {
+			      html5_video.controls = false;
+			 }
+			 else {
+			      html5_video.controls = true;
+			 }
+			 
+			 html5_video.setAttribute("src", url);
+			 flash.style.display = "none";
+		    }
+		    else {	//JW Player will scale videos to fit by default.		 
+			 if (autoHide) {
+			      //controlbar = { position: "over", idlehide: true }
+			      controlbar = "none";
+			 }
+			 else {
+			      controlbar = "bottom";
+			 }
+		    
+			 jwplayer("flash").setup({
+			      flashplayer: "http://c561770.r70.cf2.rackcdn.com/mediaplayer-5.4/player.swf",
+			      file: url,
+			      width: rsW,
+			      height: rsH,
+			      controlbar: controlbar,
+			      volume: 0,
+			      icons: false,
+			      events: {
+				   onReady: function(event) { onPlayerReady(event); },
+				   onComplete: function(event) { doneEvent(); },
+				   onError: function(error) { onPlayerError(error); },
+				   onPlay: function(event) { onPlay(event); }
+			      }
+			 });
+			 
+			 html5.style.display = "none";
+		    }
+	       }
+	       
+	       //The only way to tell if the URL is valid is to start playing the video and see if the player throws an error.
+	       //Applies to JW Player only.
+	       function onPlayerReady(event) {     
+                    jwplayer().play(true);
+               }
+	       
+	       function onPlay(event) {
+		    if (isLoading) {
+			 isLoading = false;
+			 jwplayer().pause(true);
+			 jwplayer().seek(0);
+			 //Seek starts video playing again, so pause once again.
+			 jwplayer().pause(true);
+			 jwplayer().setVolume(prefs.getInt("volume"));                          
+                         readyEvent();
+		    }
+	       }
+	  
+	       //Determine whether or not the specified file is a HTML5 video type that Chrome can play.	
+	       function checkVideoType(url) {
+		    var extensions = new Array();
+		    var extension;
+	       
+		    //These are the extensions that Chrome supports for HTML5 video. 
+		    extensions[0] = ".webm";
+		    extensions[1] = ".ogv";
+		    extensions[2] = ".ogg";
+		    
+		    if (AC.Detector.isiPad()) {
+			 extensions[3] = ".mov";
+			 extensions[4] = ".mp4";
+			 extensions[5] = ".m4v";
+		    }
+		    
+		    extension = url.substr(url.lastIndexOf('.')).toLowerCase();
+	  
+		    for (var i = 0; i < extensions.length; i++) {
+			 if (extension == extensions[i]) {
+			      isHTML5Video = true;
+			      
+			      return;
+			 }
+		    }		    
+	       }
+	       
+	       function onPlayerError(error) { 
+		    //Video can't be played.
+		    if (error)
+		    {
+			 flash.style.display = "none";			      
+			 playerError = true;
+			 doneEvent();
+		    }
+	       }
+	       
+	       function play() { 
+		    if (!playerError) {
+			 if (isHTML5Video) {
+			      html5_video.play();
+     			 }
+			 else {
+			      jwplayer().play(true);
+			 }
+		    }
+	       }
+	       
+	       function pause() {
+		    var carryOn = prefs.getBool("carryOn");
+		    
+		    if (isHTML5Video) {
+			 if (carryOn) {
+			      html5_video.pause();
+			 }
+			 else {
+			      html5_video.currentTime = 0;
+			      html5_video.pause();
+			 }
+		    }
+		    else {
+			 if (carryOn) {
+			      jwplayer().pause(true);
+			 }
+			 else {
+			      jwplayer().seek(0);
+			      jwplayer().pause(true);
+			 }
+		    }
+	       }
+	       
+	       function stop() {
+		    if (isHTML5Video) {
+			 html5_video.pause();
+		    }
+		    else {
+			 jwplayer().pause(true);
+		    }
+	       }
+	       
+	       // sends "READY" event to the Viewer
+	       function readyEvent() {
+		    gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+	       }
+	       
+	       // sends "DONE" event to the Viewer
+	       function doneEvent() {
+		    gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));	       	       
+	       }
+	       
+	       gadgets.util.registerOnLoadHandler(showViewer);
+	  </script>]]>
+     </Content>
+</Module>

@@ -1,0 +1,59 @@
+* {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+body {
+    background-color: transparent;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+}
+#scrollContainer {
+    overflow: hidden;
+    position: relative;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+thead {
+    text-align: left;
+}
+table th a {
+    text-decoration: none;
+}
+.image img {
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: middle;
+}
+.nowrap {
+    white-space: nowrap;
+}
+.noData {
+    line-height: 2em;
+    text-align: center;
+}
+
+/* Sorting */
+.sorting_asc, .sorting_desc {
+    -webkit-border-radius: 40px;
+    -moz-border-radius: 40px;
+    border-radius: 40px;
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+}
+.dataTables_scrollHeadInner table thead tr th div.indicator {
+    display: table;
+    float: right;
+}
+.dataTables_scrollHeadInner table thead tr th div.indicator div {
+    display: table-row;
+    font-size: 0.5em;
+}
+.dataTables_scrollHeadInner table thead tr th div.arrow {
+    float: right;
+    font-size: 0.75em;
+}

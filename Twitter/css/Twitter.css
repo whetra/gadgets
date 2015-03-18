@@ -1,0 +1,114 @@
+* {
+    margin: 0;
+    padding: 0;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+body, td, div, span, p {
+    background: transparent;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none; 
+}
+ol {
+    list-style: none;
+}
+a {
+    text-decoration: none;
+}
+.tweets {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.tweets:last-child {
+    border-bottom-width: 0;
+}
+/* Header */
+.timelineHeader {
+    padding: 10px;
+    position: relative;
+}
+.twitterLogo {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    text-indent: -9999;
+    display: inline-block;
+    vertical-align: middle;
+    background: transparent url('https://s3.amazonaws.com/Gadget-Twitter/images/twitter-bird.png') no-repeat center;
+    background-size: 100%;
+}
+/* List item */
+.tweet {
+    clear: both;
+    overflow: hidden;
+    padding: 10px;
+}
+/* Columns */
+.avatar {
+    float: left;
+}
+.details {
+    overflow: hidden;
+    padding-left: 10px;
+}
+
+.permalink {
+    position: relative;
+    float: right;
+    z-index: 10;
+}
+.header {
+    position: relative;
+}
+.header:before, .header:after {
+    display: table;
+    content: "";
+}
+.header:after {
+    clear: both;
+}
+.large {
+    width: 73px;
+    height: 73px;	
+}
+.small {
+    width: 48px;
+    height: 48px;
+}
+.fullName {
+    padding-right: 10px;
+}
+.text {
+    padding: 0;
+    margin: 0 5px 0 0;
+    overflow: hidden;
+    clear: both;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+.retweet {
+    margin: 3px 0;
+}
+.retweetIcon {
+    width: 14px;
+    height: 16px;
+    margin-right: 4px;
+    display: inline-block;
+    vertical-align: middle;
+    background: transparent url('https://s3.amazonaws.com/Gadget-Twitter/images/retweet.png') no-repeat center;
+}
+.separator {
+    border-bottom: 1px solid gray;
+}
+.error {
+    display: none;
+    padding: 10px;
+    font-size: 20px;
+    color: red;
+}

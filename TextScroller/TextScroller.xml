@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<Module> 
+    <ModulePrefs title="Rise Vision Scroller Gadget" height="400" title_url="http://www.risevision.com/help/users/what-are-gadgets/free-gadgets/rise-vision-text-scroller/"> 
+        <Require feature="rpc" /> 
+        <Optional feature="rise-api"> 
+            <Param name="reports_ready" /> 
+        </Optional> 
+    </ModulePrefs> 
+    <UserPref name="id" display_name="ID" datatype="hidden" default_value="" />
+    <UserPref name="text" display_name="Text" datatype="string" default_value="" required="true" />
+    <UserPref name="direction" display_name="Direction" default_value="rtl" datatype="enum">
+	<EnumValue value="ltr" display_value="Left to right"/>
+        <EnumValue value="rtl" display_value="Right to left"/>
+    </UserPref>
+    <UserPref name="backgroundColor" display_name="Background Color" datatype="string" /> 
+    <UserPref name="text_font-style" display_name="Text Font" datatype="string" default_value=".text_font-style{font-family:Verdana, Verdana, Geneva, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:24px;}" /> 
+    <UserPref name="rsW" datatype="hidden" />
+    <UserPref name="rsH" datatype="hidden" />
+    <Content type="html"> 
+        <![CDATA[
+	<style type="text/css">
+	    body {
+		-webkit-user-select: none;  /* Chrome all / Safari all */
+		-moz-user-select: none;     /* Firefox all */
+		-ms-user-select: none;      /* IE 10+ */
+		-o-user-select: none;
+		user-select: none;   
+	    }
+	    #scroller, __UP_text_font-style__
+	</style>
+    
+	<div class="text_font-style" style="visibility: hidden; position:absolute;">Trigger custom font download</div>
+    
+	<script src="https://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+	<script src="https://s3.amazonaws.com/Gadget-Text-Scroller/Controller.min.js"></script>
+	<script src="https://s3.amazonaws.com/Gadget-Text-Scroller/TextScroller.min.js"></script>
+	<script src="https://s3.amazonaws.com/Gadget-Text-Scroller/Item.min.js"></script>
+    
+	<script>
+	    var prefs = new gadgets.Prefs(),
+		isPaused = true;
+		
+	    //Issue 1042 - Disable right-click.
+	    window.oncontextmenu = function() {
+		return false;
+	    };
+	    
+	    //Add Analytics code.
+	    var _gaq = _gaq || [];
+	    
+	    _gaq.push(['_setAccount', 'UA-41395348-20']);
+	    _gaq.push(['_trackPageview']);
+	  
+	    (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	    })();
+	    
+	    function initialize() {
+		var id = prefs.getString("id"),
+		    backgroundColor = prefs.getString("backgroundColor"),
+		    scroller = document.getElementById("scroller");
+		
+		document.body.style.background = "transparent";
+			    
+		if (backgroundColor !== null && backgroundColor != "") {
+		    document.body.style.background = backgroundColor;
+		}
+		
+		if (id !== null && id != "") {
+		    gadgets.rpc.register("rscmd_play_" + id, play);
+		    gadgets.rpc.register("rscmd_pause_" + id, pause);
+		    gadgets.rpc.register("rscmd_stop_" + id, stop);
+		}
+		
+		window.controller = new Controller(scroller, prefs);
+		
+		scroller.onmousemove = function(e) {
+		    window.controller.handleMouseMove(e);
+		}
+		
+		scroller.onmousedown = function(e) {
+		    window.controller.handleMouseDown(e);
+		}
+		
+		scroller.onmouseup = function(e) {
+		    window.controller.handleMouseUp(e);
+		}
+		
+		scroller.onmouseout = function(e) {
+		    window.controller.handleMouseOut(e);
+		}
+		
+		//Need to add a delay that allows sufficient time for the custom font to be loaded by the div tag.
+		//If the font is not already loaded, the canvas can't use it.
+		setTimeout(function() {
+		    window.controller.initialize();
+		}, 1000);
+	    }
+	    
+	    function play() {
+		if (isPaused) {
+		    isPaused = false;
+		    window.controller.tick();
+		}
+	    }
+	    
+	    function pause() {
+		isPaused = true;
+		window.controller.pause();
+	    }
+	    
+	    function stop() {
+		pause();
+	    }
+	    
+	    function readyEvent() {
+		gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+	    }
+	    
+	    function doneEvent() {
+		gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+	    }
+	    
+	    gadgets.util.registerOnLoadHandler(initialize);
+	</script>
+    
+	<canvas id="scroller"></canvas>
+	]]>
+    </Content> 
+</Module>
+

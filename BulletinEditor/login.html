@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bulletin</title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+        <script src="../Common-Production/Common/RiseVision.Common.min.js"></script>
+        <script> 
+            function handleClientLoad() {
+    	        var auth = new RiseVision.Common.Authorization(),
+		    apiKey = "AIzaSyCg03Fngs-qY4eJn3TyFCZ0Wb6HOopxypc",
+                    loginCount = 0;
+                
+                $(window).bind({
+                    authorized: function() {
+                        if (loginCount == 0) {
+                            $(".login").click(function() {
+                                window.location = "editor.html";
+                            });                   
+                        }
+                        else {
+                            window.location = "editor.html";
+                        }
+                    },
+                    notAuthorized: function() {                        
+                        $(".login").click(function() {
+			    auth.handleLogin();
+                            loginCount++;
+                        });
+                    }
+                });
+                
+                window.setTimeout(function() { 
+                    gapi.client.setApiKey(apiKey);
+                    
+                    window.setTimeout(function() {
+			auth.checkAuth();
+                    }, 1);
+                }, 1);
+            } 
+        </script>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            #loginPage {
+                width: 50%;
+                margin: 0 auto;
+                padding-top: 50px;
+            }
+            #loginPage img {
+                display: block;
+                margin: auto;
+            }
+            #loginText {
+                margin-top: 1.5em;
+            }        
+        </style>
+        <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+    </head>
+    <body>
+        <div id="loginPage">
+            <a href="http://www.risevision.com/"><img id="logo" src="images/logo.png" /></a>
+            <div id="loginText">
+                Bulletin is an experimental app from <a href="http://www.risevision.com/">Rise Vision</a> that allows you to share and collaborate on 
+                the creation of Bulletins for use on your digital signage.<br><br>
+                Bulletin uses your Google Account to determine who you are, and your Google Drive to store and publish Bulletins.
+                You can share and collaborate with any other Google Account user, just as you would any other Google Drive file.<br><br>
+                To try it out, go ahead and <a class="login" href="#">login with your Google Account</a> but, please remember, this is an experimental app and we make no warranties 
+                or guarantees about its life, performance or reliability.<br><br>
+                <a class="login" href="#"><img src="images/login.png" /></a><br>
+                As always, if you have questions, concerns, suggestions, or even praise, please let us know in the 
+                <a href="http://www.google.com/url?q=http%3A%2F%2Fcommunity.risevision.com&sa=D&sntz=1&usg=AFQjCNEvgWisMCBRqr1469f8M9c79itkcg">community</a>.
+            </div>
+        </div>
+    </body>
+</html>

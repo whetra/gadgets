@@ -1,0 +1,44 @@
+#nav {
+    text-align: center;
+    overflow: hidden;
+}
+#nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}	
+#nav ul li a {
+    display: block;
+    line-height: 2em;
+    text-decoration: none;
+}
+#nav.upper {
+    text-transform: uppercase;
+}
+
+/* Horizontal */
+#nav.top ul li a,
+#nav.bottom ul li a {
+    width: 2em;
+    height: 2em;
+    float: left;
+}
+#nav.top {
+    margin-bottom: 10px;
+}
+#nav.bottom {
+    margin-top: 10px;
+}
+
+/* Vertical */
+/* http://stackoverflow.com/questions/1260122/expand-div-to-take-remaining-width */
+#nav.left {
+    float: left;
+}
+#nav.right {
+    float: right;
+}
+#nav.left ul li a,
+#nav.right ul li a {
+    width: 2em;
+}

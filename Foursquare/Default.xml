@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<Template>
+    <Style>
+	<![CDATA[
+	#container {		
+	    width: 95%;
+	    padding: 30px 30px 0 30px;
+	}
+	#upper {
+	    overflow: hidden;
+	    padding-bottom: 20px;
+	}
+	#mayor {
+	    position: relative;
+	    float: left;
+	    margin: 0;
+	    padding: 0;
+	}
+	#crown {
+	    position: absolute;
+	    top: -0.2em;
+	    left: 0.4em;
+	    z-index: 10;
+	    -o-transform: rotate(-30deg);
+	    -moz-transform: rotate(-30deg);
+	    -ms-transform: rotate(-30deg);
+	    -webkit-transform: rotate(-30deg);
+	    transform: rotate(-30deg);
+	}
+	#qr {
+	    float: right;
+	    margin: 0;
+	    padding: 0;
+	}
+	#description {
+	    margin-left: 150px;
+	    margin-right: 150px;
+	}
+	#lower {
+	    clear: both;
+	    overflow: hidden;
+	}
+	#wrapper {
+	    height: 100%;
+	    width: 100%;
+	}
+	#tips, #specials {
+	    display: none;
+	}
+	#photos, #wrapper {
+	    -webkit-transition: opacity 0.6s ease-in-out;
+	    -moz-transition: opacity 0.6s ease-in-out;
+	    -o-transition: opacity 0.6s ease-in-out;
+	    transition: opacity 0.6s ease-in-out;
+	}
+	.tipPhotoWrapper, .specialLogoWrapper {
+	    clear: left;
+	    float: left;
+	    margin: 0 0 0 25px;
+	    padding: 1em;
+	}
+	.tipName, .tip, .tipDate, .specialType, .special {
+	    line-height: 150%;
+	}
+	.tipPhoto {
+	    height: 50px;
+	    width: 50px;
+	}
+	.tipWrapper, .specialWrapper {
+	    margin-left: 110px;
+	    margin-bottom: 10px;
+	}
+	p {
+	    margin: 0;
+	    padding: 0;
+	}
+	.photoFadeOut {
+	    opacity: 0.1;
+	}
+	.fadeOut {
+	    opacity: 0;
+	}
+	.fadeIn {
+	    opacity: 1;
+	}
+	]]>
+    </Style>
+    <Layout> 
+	<![CDATA[
+	<div id="content">
+	    <div id="upper">
+		<img id="crown" src="https://s3.amazonaws.com/Gadget-Foursquare/images/crown.png" />
+		<div id="mayor"> 
+		    <img class="photo" />
+		</div>
+		<div id="qr"> 
+		    <img class="qrCode" />		
+		</div>
+		<div id="description">
+		    <span class="noMayor mayor_font-style">Check-in now to become the Mayor!</span>
+		    <span class="mayor mayor_font-style">
+			<span class="mayorName mayor_font-style"></span>
+			<span class="mayor_font-style"> is the Mayor with </span> 
+			<span class="mayorCheckins mayor_font-style"></span>
+			<span class="mayor_font-style">check ins!</span>
+		    </span>
+		    <br />
+		    <span class="checkins checkins_font-style"></span>
+		    <span class="checkins_font-style"> people have checked in here so far.</span>
+		</div> 
+	    </div> 
+	    <div id="lower">
+		<div id="wrapper" class="fadeOut">
+		    <div id="tips">
+			<div class="tipPhotoWrapper">
+			    <img class="tipPhoto" />
+			</div>
+			<div class="tipWrapper">
+			    <p class="tipName heading_font-style"></p>
+			    <p class="tip text_font-style"></p>
+			    <p class="tipDate"></p>
+			</div>
+			<div class="tipPhotoWrapper">
+			    <img class="tipPhoto" />
+			</div>
+			<div class="tipWrapper">
+			    <p class="tipName heading_font-style"></p>
+			    <p class="tip text_font-style"></p>
+			    <p class="tipDate"></p>
+			</div>
+		    </div>
+		    <div id="specials">
+			<div class="specialLogoWrapper">
+			    <img class="specialLogo" />
+			</div>
+			<div class="specialWrapper">
+			    <p class="specialTitle heading_font-style"></p>
+			    <p class="special text_font-style"></p>
+			</div>
+			<div class="specialLogoWrapper">
+			    <img class="specialLogo" />
+			</div>
+			<div class="specialWrapper">
+			    <p class="specialTitle heading_font-style"></p>
+			    <p class="special text_font-style"></p>
+			</div>
+		    </div>
+		</div>
+		<div id="photos" class="photoFadeOut">
+		    <div id="cf" class="ContentFlow">
+			<div class="loadIndicator">
+			    <div class="indicator"></div>
+			</div>
+			<div class="flow"></div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+	]]>
+    </Layout> 
+</Template> 

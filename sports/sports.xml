@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Rise Display Sports Gadget" height="400" title_url="http://www.risevision.com/help/users/what-are-gadgets/premium-gadgets/rise-vision-sports/">
+        <Require feature="rpc" />
+        <Optional feature="rise-api">
+            <Param name="reports_ready" />
+        </Optional>
+    </ModulePrefs>
+    <UserPref name="id" display_name="ID" datatype="hidden" default_value="" />
+    <UserPref name="sport" display_name="Sports" datatype="enum" default_value="ALL">
+  <EnumValue value="ALL" display_value="All"/>
+        <EnumValue value="NFL" display_value="NFL"/>
+  <EnumValue value="MLB" display_value="MLB"/>
+        <EnumValue value="NBA" display_value="NBA"/>
+  <EnumValue value="NHL" display_value="NHL"/>
+  <EnumValue value="CFOOT" display_value="College Football Division I-A"/>
+        <EnumValue value="CBASK" display_value="Men&#146;s College Basketball Division I"/>
+    </UserPref>
+    <UserPref name="collegeGames" display_name="College Games" datatype="enum" default_value="AP">
+  <EnumValue value="None" display_value="None"/>
+  <EnumValue value="All" display_value="All"/>
+        <EnumValue value="AP" display_value="AP Top 25"/>
+    </UserPref>
+    <UserPref name="duration" display_name="Duration (seconds)" datatype="string" default_value="10" />
+    <UserPref name="displayOdds" display_name="Display Game Odds" datatype="bool" default_value="true" />
+    <UserPref name="backgroundColor" display_name="Background Color" datatype="string" />
+    <UserPref name="team_font-style" display_name="Team Font" datatype="string" default_value=".team_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:bold;font-size:26px;}" />
+    <UserPref name="game_font-style" display_name="Game Status Font" datatype="string" default_value=".game_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:bold;font-size:18px;}" />
+    <UserPref name="sport_font-style" display_name="Sport Header Font" datatype="string" default_value=".sport_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:bold;font-size:32px;}" />
+    <UserPref name="layout" display_name="Layout" datatype="enum" default_value="single">
+  <EnumValue value="single" display_value="Single Game"/>
+        <EnumValue value="stacked" display_value="Stacked Games"/>
+  <EnumValue value="custom" display_value="Custom"/>
+    </UserPref>
+    <UserPref name="layoutURL" display_name="Layout URL" datatype="string" />
+    <UserPref name="acknowledgement" display_name="I acknowledge that there is currently no charge for this Gadget, but at a date that has yet to be determined, it will cost $5 per display, per month.  At that time I will have 30 days to decide if I wish to continue using this Gadget." datatype="bool" default_value="false" />
+    <UserPref name="rsH" display_name="Container Height" datatype="hidden" />
+    <UserPref name="rsW" display_name="Container Width" datatype="hidden" />
+    <Content type="html">
+        <![CDATA[
+        <style type="text/css">
+            body {
+    background-color: transparent;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+      }
+
+      #container {
+    width: __UP_rsW__px;
+    height: __UP_rsH__px;
+      }
+
+      .error {
+    padding: 1em;
+    font-size: 20px;
+    color: red;
+      }
+
+      __UP_team_font-style__
+      __UP_game_font-style__
+      __UP_sport_font-style__
+        </style>
+
+  <div id="container">
+  </div>
+
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+  <script type="text/javascript" src="http://datejs.googlecode.com/svn/trunk/build/date.js"></script>
+
+  <script type="text/javascript" src="http://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+  <script type="text/javascript" src="http://s3.amazonaws.com/Common-Production/Sports/RiseVision.Common.Sports.min.js"></script>
+  <script type="text/javascript" src="http://3e0b2e35e630ddeda037-b278a7924c8db845e077fc70aa73c08d.r1.cf2.rackcdn.com/RiseVision.Sports.min.js"></script>
+
+        <script type="text/javascript">
+            var prefs = new gadgets.Prefs(),
+    sports = null;
+
+      //Issue 1044 - Disable right-click.
+      window.oncontextmenu = function() {
+    return false;
+      };
+
+      //Add Analytics code.
+      var _gaq = _gaq || [];
+
+      _gaq.push(['_setAccount', 'UA-41395348-4']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+      google.load("jquery", "1");
+
+            function initialize() {
+                var id = prefs.getString("id");
+                var backgroundColor = prefs.getString("backgroundColor");
+
+                if (backgroundColor !== null && backgroundColor != "") {
+                    document.body.style.background = backgroundColor;
+                }
+
+    if (id !== null && id != "") {
+        gadgets.rpc.register("rscmd_play_" + id, play);
+        gadgets.rpc.register("rscmd_pause_" + id, pause);
+        gadgets.rpc.register("rscmd_stop_" + id, stop);
+        gadgets.rpc.register("rsparam_set_" + id, initSports);
+        gadgets.rpc.call("", "rsparam_get", null, id, "displayId");
+    }
+            }
+
+      function initSports(name, value) {
+    if (prefs.getBool("acknowledgement")) {
+        sports = new RiseVision.Sports(value);
+        sports.loadLayout();
+    }
+    else {
+        $("#container").text("You must check the acknowledgement setting in order to use this Gadget.");
+        $("#container").addClass("error");
+        readyEvent();
+    }
+      }
+
+      function play() {
+    sports.play();
+      }
+
+      function pause() {
+    sports.pause();
+      }
+
+      function stop() {
+    sports.pause();
+      }
+
+            // sends "READY" event to the Viewer
+            function readyEvent() {
+                gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+            }
+
+            // sends "DONE" event to the Viewer
+            function doneEvent() {
+                gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+            }
+
+      gadgets.util.registerOnLoadHandler(initialize);
+        </script>]]>
+    </Content>
+</Module>
+

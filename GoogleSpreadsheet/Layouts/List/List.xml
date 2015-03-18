@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+	<![CDATA[
+	* {
+	    margin: 0;
+	    padding: 0; 
+	}
+	body {
+	    background: transparent;
+	    user-select: none;
+	    -moz-user-select: none;
+	    -webkit-user-select: none;
+	    -khtml-user-select: none; 
+	}
+	ul {
+	    list-style: none;
+	}
+	h3 {
+	    margin-bottom: 10px;
+	}
+	h4 {
+	    margin-bottom: 0;
+	    line-height: 1;
+	}
+	
+	#scrollContainer {
+	    height: 100%;
+	    overflow: hidden;
+	}
+	
+	.menus {
+	    margin-bottom: 20px;
+	    padding-bottom: 5px;
+	    border-bottom: 1px solid #EAEAEA;
+	}
+	.menus ul li {
+	    margin-bottom: 5px;
+	}
+	.menus ul ul {
+	    display: inline;
+	}
+	.menus ul ul li {
+	    display: inline;
+	    margin: 0 5px 0 0 ;
+	}
+	.A {
+	    font-family: Trebuchet MS, Helvetica, sans-serif;
+	    color: #22324B;
+	    font-size: 14px;
+	}
+	/* Color Conditions:
+	   changeUpIncrease - Change Up Green Down Red - Styling for Change Up Green
+	   changeUpDecrease - Change Up Green Down Red - Styling for Change Down Red
+	   changeDownDecrease - Change Down Green Up Red - Styling for Change Down Green
+	   changeDownIncrease - Change Down Green Up Red - Styling for Change Up Red
+	   valuePositivePositive - Value Positive Green Negative Red - Styling for Value Positive Green
+	   valuePositiveNegative - Value Positive Green Negative Red - Styling for Value Negative Red
+	   valueNegativeNegative - Value Negative Green Positive Red - Styling for Value Negative Green
+	   valueNegativePositive - Value Negative Green Positive Red - Styling for Value Positive Red */
+	.changeUpIncrease, .changeDownDecrease, .valuePositivePositive, .valueNegativeNegative {
+	    color: rgb(0, 255, 0);
+	}
+	.changeUpDecrease, .changeDownIncrease, .valuePositiveNegative, .valueNegativePositive {
+	    color: red;
+	}
+	]]>
+    </Style>
+    <Layout>
+	<![CDATA[
+	<div id="scrollContainer">
+	    <div id="menu" class="page">
+		<div class="repeat item menus">
+		    <!-- Shows data in Column A using the custom styling specified in the above CSS. -->
+		    <h3 class="A"></h3>
+		    <ul>
+			<li>
+			    <div>
+				<!-- Shows data in Column B using the Heading Font style. -->
+				<h4 class="B heading_font-style"></h4>
+				<!-- Shows data in Column C using the Data Font style. -->
+				<span class="C data_font-style"></span>
+				<ul>
+				    <li>
+					<!-- Shows data in Column D using the Data Font style. -->
+					<span class="D data_font-style"></span>
+				    </li>
+				</ul>
+			    </div>
+			</li>
+		    </ul>
+		</div>
+	    </div>
+	</div>
+	]]>
+    </Layout>
+</Template>
+

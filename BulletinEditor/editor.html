@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bulletin</title>
+	<script src="https://www.google.com/jsapi"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	
+	<script src="../Common-Production/spinner/jquery.spinner.min.js"></script>
+	<script src="../Common-Production/Common/RiseVision.Common.min.js"></script>
+	<script src="../Common-Production/Bulletin/RiseVision.Bulletin.js"></script>
+        <script src="ckeditor/ckeditor.js"></script>                
+        <script src="js/editor.js"></script>
+        <script>
+            var auth = new RiseVision.Common.Authorization(),
+		apiKey = "AIzaSyBTrD33SOr04yZehbpiQ6BC67mi7Iewuwo",
+                bulletinEditor;
+            
+            google.load("picker", "1");
+        
+            // The "instanceCreated" event is fired for every editor instance created.
+            CKEDITOR.on("instanceCreated", function(event) {
+                var editor = event.editor,
+                    element = editor.element;
+            
+                // Customize editors for headers and tag list.
+                // These editors don't need features like smileys, templates, iframes etc.
+                if (element.is("textarea")) {
+		    // Customize the editor configurations on "configLoaded" event,
+		    // which is fired after the configuration file loading and
+		    // execution. This makes it possible to change the
+		    // configurations before the editor initialization takes place.
+		    editor.on("configLoaded", function() {
+			// Remove unnecessary plugins to make the editor simpler.
+			editor.config.removePlugins = "find,flash," +
+			    "forms,iframe,newpage,removeformat," +
+			    "smiley,specialchar,stylescombo,templates";
+	
+			// Rearrange the layout of the toolbar.
+			editor.config.toolbar = [
+			    //{ name: "document", items : [ "Source", "-", "New", "Open", "Save", "SaveAs" ] },
+			    { name: "document", items : [ "New", "Open", "Save", "SaveAs" ] },
+			    { name: "styles", items: [ "Font", "FontSize" ] },
+			    { name: "basicstyles", items: [ "Bold", "Italic", "Underline" ] },
+			    { name: "colors", items : [ "TextColor", "BGColor" ] },
+			    { name: "paragraph", items : ["JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock", "NumberedList", "BulletedList", "Outdent", "Indent"] },
+			    { name: "links", items : [ "Link" ] },
+			    { name: "insert", items : [ "Image" ] }
+			];
+		    
+			editor.config.resize_enabled = false;
+            	    });
+                }                                    
+            });
+            
+            window.onload = function() {
+                CKEDITOR.replace("editable");
+            };
+            
+            window.onbeforeunload = function(evt) {
+                var message = "You have unsaved changes.";
+                
+                if (CKEDITOR.instances.editable) {
+                    if (CKEDITOR.instances.editable.checkDirty()) {                                    		
+            		if (typeof evt == "undefined") {
+                            evt = window.event;                
+                        }
+                        
+                        if (evt) {
+                            evt.returnValue = message;
+                        }
+                
+                        return message;
+            	    }
+                }
+            }
+                    
+            function handleClientLoad() {                                
+                $(window).bind({
+                    authorized: function() {
+                        $("#container").css("visibility", "visible");
+                        bulletinEditor = new RiseVision.BulletinEditor();
+                    },
+                    notAuthorized: function() {
+                        window.location = "login.html";
+                    }
+                });
+                
+                window.setTimeout(function() { 
+                    gapi.client.setApiKey(apiKey);
+                    
+                    window.setTimeout(function() {
+                        auth.checkAuth();
+                    }, 1);
+                });
+            }
+        </script>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            /* Editor */
+            #container {
+                visibility: hidden;
+                width: 90%;
+                margin: 0 auto;
+		padding-top: 50px;                
+	    }
+            #header {
+                overflow: hidden;
+                margin-bottom: 20px;
+                }
+                #header #title {
+                    float: left;
+                    font-size: 20px;
+                    margin-right: 10px;
+                }
+                #header #title #name {                
+                    line-height: 30px;                                                
+                    color: #005484;
+                }
+                #header #title input#newName {
+                    font-size: 20px;
+                }
+		#header a {
+		    padding-left: 10px;
+		    line-height: 30px;
+		    color: #0A5DC3;
+		}
+            #resolution {
+                float: left;
+                color: white;
+                background-color: #00a466;
+                border-radius: 5px;
+                padding: 5px;
+                margin-right: 10px;
+                }
+                #resolution #readOnlyWidth, 
+                #resolution #readOnlyHeight, 
+                #resolution #width, 
+                #resolution #height {
+                    width: 40px;                
+                    /* Apply same padding to span that textbox has. */
+                    padding: 1px;
+                    border: 0;
+                    margin: 0;
+                }
+		#resolution #width,
+                #resolution #height {
+                    font-size: 14px;
+                }
+		#resolution #by {
+                    padding: 1px 5px;
+                }
+                #resolution span {
+                    display: inline-block;
+                    text-align: center;                
+                }
+	    #editable {
+		padding-top: 10px;
+		width: 800px;
+		height: 600px;
+		border-style: ridge;
+		z-index: 10;
+	    }
+	    #saved {
+		float: left;
+	    }
+            #saved, #readOnly, #error {                
+                color: red;
+                line-height: 30px;
+                display: none;
+            }
+	    #readOnly {
+		clear: left;
+	    }
+            /*.actions {
+                clear: left;
+                visibility: hidden;
+                margin-bottom: 50px;
+            }            
+            #status {
+                display: none;                
+                margin-right: 10px;
+            }*/
+        </style>
+        <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="header">
+                <div id="title">
+                    <div id="name">Untitled Bulletin</div>                    
+                </div>
+                <!--<span id="status"></span><br>-->
+                <div id="resolution">
+                    <span id="readOnlyWidth">800</span><span id="by">x</span><span id="readOnlyHeight">600</span>
+                </div>
+                <div id="saved">Saved</div>
+		<a id="help" href="http://www.risevision.com/help/users/what-are-gadgets/free-gadgets/bulletin-widget/" target="_blank"><span>Help</span></a><br />
+		<div id="readOnly">
+		    In order to edit this Bulletin, you will need to contact the owner and have them provide you with edit rights.
+		</div>
+		<div id="error"></div>
+            </div>                
+            <textarea id="editable" name="editable"></textarea>
+            <!--<div class="actions">-->
+            <!--    <button id="publish" type="button">Publish</button>-->
+            <!--    <button id="restore" type="button">Restore</button>-->
+            <!--</div>-->
+        </div>
+    </body>
+</html>

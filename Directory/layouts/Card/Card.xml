@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+	<![CDATA[
+	#card {
+	    display:none;
+	}
+	.cardBorder {
+	    -webkit-border-radius: 	12px;
+	    border-radius: 		12px;
+	    -moz-background-clip: 	padding;
+	    -webkit-background-clip:	padding-box;
+	    background-clip: 		padding-box;
+	}
+	#close {
+	    font-size: 		1.5em;
+	    font-weight: 	900;
+	    float: 		right;
+	    width: 		2em; 
+	    height: 		2em;
+	    margin:		0.5em;
+	    text-align: 	center;
+	    line-height: 	1.4em;
+	    border: 		0.3em solid;
+	    -moz-box-shadow:    -3px 3px 8px black;
+	    -webkit-box-shadow:	-3px 3px 8px black;
+	    box-shadow:         -3px 3px 8px black;
+	    text-decoration: 	none;
+	    cursor: 		pointer;
+	}
+	#image {
+	    clear: both;		
+	}
+	#image.right {
+	    float: right;
+	}
+	#image.left {
+	    float: left;
+	}
+	#image.center {
+	    width: 	100%;
+	    text-align:	center;
+	}
+	#image img {
+	    max-width: 100%;
+	}
+	#subtitle {
+	    clear: left;
+	}
+	]]>
+    </Style>
+    <Layout>
+	<![CDATA[
+	<div id="card">		
+	    <a id="close" href="#">X</a>
+	    <h1 id="title" class="cardTitle_font-style"></h1>
+	    <h2 id="subtitle" class="cardSubtitle_font-style"></h2>
+	    <div id="image"></div>
+	    <p id="detail" class="cardDetail_font-style"></p>
+	</div>
+	]]>
+    </Layout>
+</Template>

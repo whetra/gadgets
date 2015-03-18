@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Rise Twitter Gadget" height="400" title_url="https://help.risevision.com/user/content/twitter-gadget">
+    <Require feature="rpc" />
+    <Optional feature="rise-api">
+      <Param name="reports_ready" />
+    </Optional>
+  </ModulePrefs>
+  <UserPref name="id" display_name="Id" default_value="" datatype="hidden" />
+  <UserPref name="query" display_name="Twitter Query" required="true" default_value="@Risevision" datatype="string" />
+  <UserPref name="tweetTime" display_name="Time Between Tweets" required="true" default_value="20" datatype="string" />
+  <UserPref name="tweetNumber" display_name="Number of Tweets" required="true" default_value="30" datatype="string" />
+  <UserPref name="avatarSize" display_name="Avatar Size" default_value="large" datatype="enum">
+    <EnumValue value="small" display_value="Small (40x40)"/>
+    <EnumValue value="large" display_value="Large (80x80)"/>
+  </UserPref>
+  <UserPref name="header_font-style" display_name="Header Font" datatype="string" default_value=".header_font-style{font-size:24px;font-weight:bold;color:rgb(0, 0, 0);font-family:Arial, Arial, Helvetica, sans-serif;}" />
+  <UserPref name="tweet_font-style" display_name="Tweet Font" datatype="string" default_value=".tweet_font-style{font-size:20px;color:rgb(0, 0, 0);font-family:Arial, Arial, Helvetica, sans-serif;}" />
+  <UserPref name="timestamp_font-style" display_name="Timestamp Font" datatype="string" default_value=".timestamp_font-style{font-size:18px;color:rgb(0, 0, 0);font-family:Arial, Arial, Helvetica, sans-serif;}" />
+  <UserPref name="scrollDirection" display_name="Scroll Direction" default_value="down" datatype="enum">
+    <EnumValue value="up" display_value="Up"/>
+    <EnumValue value="down" display_value="Down"/>
+  </UserPref>
+  <UserPref name="backgroundColor" display_name="Background Color" default_value="" datatype="string" />
+  <UserPref name="showSeparator" display_name="Show Separator" datatype="bool" default_value="true" />
+  <UserPref name="rsH" display_name="Container Height" default_value="100%" datatype="hidden" />
+  <UserPref name="rsW" display_name="Container Width" default_value="100%" datatype="hidden" />
+  <UserPref name="rsS" display_name="Scale" default_value="100" datatype="hidden" />
+  <UserPref name="rsA" display_name="Alignment" default_value="mc" datatype="hidden" />
+  <Content type="html">
+    <![CDATA[
+    <style type="text/css">
+      __UP_header_font-style__
+      __UP_tweet_font-style__
+      __UP_timestamp_font-style__
+    </style>
+
+    <div id="container">
+      <div class="timelineHeader">
+        <h1 class="timelineTitle header_font-style">Tweets</h1>
+        <a class="twitterLogo" href="https://twitter.com/" title="Twitter" target="_blank">Twitter</a>
+      </div>
+      <div id="scrollContainer" class="tweets">
+        <ol class="page"></ol>
+      </div>
+    </div>
+    <div class="error"></div>
+
+    <link type="text/css" rel="stylesheet" href="https://s3.amazonaws.com/Gadget-Twitter/css/Twitter.css"></link>
+
+    <script src="http://www.google.com/jsapi"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script src="http://datejs.googlecode.com/svn/trunk/build/date.js"></script>
+
+    <script src="https://s3.amazonaws.com/Common-Production/InfiniteScroll/InfiniteScroll.min.js"></script>
+    <script src="https://s3.amazonaws.com/Gadget-Twitter/Twitter.min.js"></script>
+
+    <script>
+      var prefs = new gadgets.Prefs(),
+        twitterList = null;
+
+      window.oncontextmenu = function() {
+        return false;
+      };
+
+      //Add Analytics code.
+      var _gaq = _gaq || [];
+
+      _gaq.push(['_setAccount', 'UA-41395348-7']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+      function initialize() {
+        var id = prefs.getString("id"),
+          backgroundColor = prefs.getString("backgroundColor");
+
+        if (backgroundColor !== null && backgroundColor != "") {
+          document.body.style.background = backgroundColor;
+        }
+
+        if (id !== null && id != "") {
+          gadgets.rpc.register("rscmd_play_" + id, play);
+          gadgets.rpc.register("rscmd_pause_" + id, pause);
+          gadgets.rpc.register("rscmd_stop_" + id, stop);
+        }
+
+        google.setOnLoadCallback(function() {
+          twitterList = new RiseVision.TwitterList();
+
+          gadgets.rpc.register("rsparam_set_" + id, function(name, value) {
+          twitterList.processData.call(twitterList, name, value);
+          });
+
+          twitterList.getData();
+        });
+      }
+
+      function play() {
+        twitterList.play();
+      }
+
+      function pause() {
+        twitterList.pause();
+      }
+
+      function stop() {
+        twitterList.pause();
+      }
+
+      function readyEvent() {
+        gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+      }
+
+      function doneEvent() {
+        gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+      }
+
+      gadgets.util.registerOnLoadHandler(initialize);
+    </script>]]>
+  </Content>
+</Module>

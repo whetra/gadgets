@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+	<ModulePrefs title="Rise Presentation Gadget" height="400">
+	<UserPref name="myViewerDocId" display_name="Id" datatype="string" required="true" default_value="dhrr6ms2_40dmq9gcg2"/>
+	<UserPref name="myViewerWidth" display_name="Width (pixels)" datatype="string" default_value="600"/>
+	<UserPref name="myViewerHeight" display_name="Height (pixels)" datatype="string" default_value="600"/>
+	<UserPref name="myViewerInterval" display_name="Interval (seconds)" datatype="string" default_value="5"/>
+	<UserPref name="myViewerAutoShow" display_name="Auto Show?" datatype="bool" default_value="true"/>
+	<UserPref name="myViewerLoopShow" display_name="Loop Show?" datatype="bool" default_value="true"/>
+	<Content type="html">
+		<![CDATA[
+			<style type="text/css">
+				#iframe-holder {
+					overflow: hidden;
+				}
+				#iframe-holder iframe {
+					margin: 0 0 -27px 0;
+				}
+			</style>
+				
+			<div id="iframe-holder">
+				<iframe id="viewer1"></iframe>
+			</div>
+			
+			<script type="text/javascript">
+			<!--
+				// Get userprefs
+				var prefs = new gadgets.Prefs();
+				
+				function displayPresentation() {	
+					var url = 'http://docs.google.com/present/view?id=' + prefs.getString('myViewerDocId');
+					
+					if (prefs.getInt('myViewerInterval') > 0)
+						url += '&interval=' + prefs.getInt('myViewerInterval');
+					
+					if (prefs.getBool('myViewerAutoShow') == true)
+						url += '&autoStart=true';
+					
+					if (prefs.getBool('myViewerLoopShow') == true)
+						url += '&loop=true';
+					
+					if (prefs.getInt('myViewerWidth') < 411)
+						url += '&size=s';
+					else if (prefs.getInt('myViewerWidth') < 556)
+						url += '&size=m';
+					else if (prefs.getInt('myViewerWidth') < 701)
+						url += '&size=l';
+					else
+						url += '&size=l';
+				
+					var viewer = document.getElementById('viewer1');
+					viewer.src = url;
+					viewer.frameborder = 0;
+					viewer.width = prefs.getInt('myViewerWidth');;
+					viewer.height = prefs.getInt('myViewerHeight');	
+				}
+				
+				// Pass the userprefs for this module instance to the function
+				// (allows users to include multiple module instances on their page)
+				gadgets.util.registerOnLoadHandler(displayPresentation);
+			-->
+			</script>
+		]]>
+	</Content>
+</Module>

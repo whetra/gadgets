@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+        <![CDATA[
+        #outer {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #info {
+            padding-bottom: 10px;
+        }
+        #days {
+            overflow: hidden;	/* Expand to contain floated image. */
+            text-align: center;
+        }
+        #currentDay {
+            width: 28%;
+        }
+        .currentIcon, .icon {
+            max-width: 100%;
+        }
+        #days > div {
+            float: left;
+        }
+        #day1, #day2, #day3 {
+            width: 24%;
+        }
+        ]]>
+    </Style>
+    <Layout>
+        <![CDATA[
+        <div id="outer">
+            <div id="info">
+                <span id="city" class="address_font-style"></span><br />
+                <div id="humidityAndWind">
+                    <span id="humidity" class="other_font-style"></span>
+                    <span>&#149;</span>
+                    <span id="wind" class="other_font-style"></span>
+                </div>
+            </div>
+            <div id="days">
+                <div id="currentDay">
+                    <img src="" class="currentIcon" />
+                    <div class="temp_font-style currentTemp"></div>
+                </div>
+                <div id="day1">
+                    <div class="forecastDay_font-style day"></div>
+                    <img src="" class="icon" />
+                    <div class="forecastTemp_font-style temp"></div>
+                </div>
+                <div id="day2">
+                    <div class="forecastDay_font-style day"></div>
+                    <img src="" class="icon" />
+                    <div class="forecastTemp_font-style temp"></div>
+                </div>
+                <div id="day3">
+                    <div class="forecastDay_font-style day"></div>
+                    <img src="" class="icon" />
+                    <div class="forecastTemp_font-style temp"></div>
+                </div>
+            </div>
+        </div>
+        ]]>
+    </Layout>
+</Template>

@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Rise Financial Chart Gadget" title_url="http://www.risevision.com/help/users/what-are-gadgets/premium-gadgets/rise-vision-financial-chart/">
+	<Require feature="rpc" />
+	<Optional feature="rise-api">
+	    <Param name="reports_ready" />
+	</Optional>
+    </ModulePrefs>
+    <UserPref name="instrument" />
+    <UserPref name="disclaimerFont" />
+    <UserPref name="disclaimerLoc" />
+    <UserPref name="acceptance" />    
+    <UserPref name="duration" />
+    <UserPref name="previousCloseColor" />
+    <UserPref name="showTitles" />    
+    <UserPref name="titleDecimals" />
+    <UserPref name="titleSign" />
+    <UserPref name="showVolume" />
+    <UserPref name="showVolumeTitle" />
+    <UserPref name="volumeHeight" />
+    <UserPref name="volumeColor" />
+    <UserPref name="barWidth" />
+    <UserPref name="showDuration" />
+    <UserPref name="durButtonColor" />
+    <UserPref name="durSelButtonColor" />
+    <UserPref name="durButtonRadius" />
+    <UserPref name="durRotate" />
+    <UserPref name="durReturn" />
+    <UserPref name="showComparison" />
+    <UserPref name="compInstruments" />
+    <UserPref name="compNames" />    
+    <UserPref name="compLineColor" />
+    <UserPref name="compButtonRadius" />
+    <UserPref name="compButtonColor" />
+    <UserPref name="compSelButtonColor" />    
+    <UserPref name="compReturn" />
+    <UserPref name="showAxis" />
+    <UserPref name="axisDecimals" />
+    <UserPref name="axisLineColor" />
+    <UserPref name="gridLineColor" />    
+    <UserPref name="chartPlotLineColor" />
+    <UserPref name="chartFillColor" />
+    <UserPref name="bgColor" />
+    <UserPref name="id" />
+    <UserPref name="rsW" />
+    <UserPref name="rsH" />
+    <Content type="html" view="editor">
+        <![CDATA[
+	    <style>
+		#settings {
+		    display: none;
+		}
+	    </style>
+	    <div id="wrapper">
+		<div class="errors"></div>
+		<form id="settings" name="settings">
+		    <ol>
+			<li>
+			    <label for="instrument">
+				<a href="#" class="tooltip">Instrument*:<span>Enter financial instrument symbol or use the Stock Selector to find the symbol you want</span></a>
+			    </label>
+			    <input id="instrument" name="instrument" type="text" class="medium" value="AAPL.O" required autofocus />
+			    <a href="#" class="stockSelector" data-for="instrument">Stock Selector</a>
+			</li>
+			<li>
+			    <label for="disclaimerFont">
+				<a href="#" class="tooltip">Disclaimer Font:<span>Data provider acknowledgement and disclaimer font</span></a>
+			    </label>
+			    <select id="disclaimerFont" name="disclaimerFont" class="short">
+				<option value="Arial, Arial, Helvetica, sans-serif">Arial</option>
+				<option value="Arial Black, Arial Black, Gadget, sans-serif">Arial Black</option>
+				<option value="Comic Sans MS, Comic Sans MS, cursive">Comic Sans MS</option>
+				<option value="Courier New, Courier New, Courier, monospace">Courier New</option>
+				<option value="Georgia, Georgia, serif">Georgia</option>
+				<option value="Impact, Impact, Charcoal, sans-serif">Impact</option>
+				<option value="Lucida Console, Monaco, monospace">Lucida Console</option>
+				<option value="Lucida Sans Unicode, Lucida Grande, sans-serif">Lucida Sans Unicode</option>
+				<option value="MS Sans Serif, Geneva, sans-serif">MS Sans Serif</option>
+				<option value="MS Serif, New York, serif">MS Serif</option>
+				<option value="Palatino Linotype, Book Antiqua, Palatino, serif" >Palatino Linotype</option>
+				<option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+				<option value="Times New Roman, Times, serif">Times New Roman</option>
+				<option value="Trebuchet MS, Helvetica, sans-serif">Trebuchet MS</option>
+				<option value="Verdana, Verdana, Geneva, sans-serif" selected="selected">Verdana</option>				
+			    </select>
+			</li>
+			<li>
+			    <label for="disclaimerLoc">
+				<a href="#" class="tooltip">Disclaimer Location:<span>Data provider acknowledgement and disclaimer location</span></a>
+			    </label>
+			    <select id="disclaimerLoc" name="disclaimerLoc" class="short">
+				<option value="topRight">Top Right</option>
+				<option value="bottomRight" selected="selected">Bottom Right</option>
+				<option value="topLeft">Top Left</option>
+				<option value="bottomLeft">Bottom Left</option>
+			    </select>
+			</li>
+			<li>
+			    <label>Acceptance:</label>
+			    <input id="acceptance" name="acceptance" type="checkbox" />
+			    <label for="acceptance" class="right">I acknowledge that there is currently no charge for this Gadget, but at a date that has yet to be determined, it will cost $15 per display, per month.  At that time I will have 30 days to decide if I wish to continue using this Gadget.</label>
+			</li>			
+			<li>
+			    <label for="duration">Chart Duration</label>
+			    <select id="duration" name="duration" class="short">
+				<option value="Day">Day</option>
+				<option value="Week">Week</option>
+				<option value="1M" selected="selected">Month</option>
+				<option value="3M">3 Months</option>
+				<option value="6M">6 Months</option>
+				<option value="1Y">1 Year</option>
+				<option value="5Y">5 Years</option>
+			    </select>
+			</li>
+			<li class="previousClose drillDown" style="display: none;">
+			    <ol>
+				<li>
+				    <label for="previousCloseColor">Previous Close Plot Line Color:</label>
+				    <input id="previousCloseColor" name="previousCloseColor" type="text" class="short" value="rgb(255, 0, 0)" />
+				    <div class="colorPicker" data-for="previousCloseColor"></div>
+				</li>
+			    </ol>
+		        </li>
+			<li>
+			    <label for="showTitles">Show Chart Titles:</label>
+			    <input id="showTitles" name="showTitles" type="checkbox" checked="checked" />
+			</li>
+			<li class="title drillDown">
+			    <ol>
+				<li>
+				    <label for="title_font-style">Chart Title Font:</label>
+				    <span id="title_font-style" name="title_font-style" data-css=".title_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:18px;}">Arial, 18px, color: rgb(0, 0, 0)</span>
+				    <div class="fontSelector" data-for="title_font-style"></div>
+				</li>
+				<li>
+				    <label for="titleDecimals">Chart Title Decimals:</label>
+				    <select id="titleDecimals" name="titleDecimals" class="short">
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2" selected="selected">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+				    </select>
+				</li>
+				<li>
+				    <label for="titleSign">Chart Title Sign:</label>
+				    <select id="titleSign" name="titleSign" class="short">
+					<option value="none">None</option>
+					<option value="minus">-</option>
+					<option value="plusMinus">+/-</option>
+					<option value="parentheses">( )</option>
+					<option value="arrow" selected="selected">Arrow</option>
+				    </select>
+				</li>
+			    </ol>
+		        </li>
+			<li>
+			    <label for="showVolume">Show Volume:</label>
+			    <input id="showVolume" name="showVolume" type="checkbox" />
+			</li>
+			<li class="volume drillDown" style="display: none;">
+			    <ol>
+				<li>
+				    <label for="showVolumeTitle">Show Volume Title:</label>
+				    <input id="showVolumeTitle" name="showVolumeTitle" type="checkbox" />
+				</li>
+				<li class="volumeTitle drillDown" style="display: none;">
+				<ol>
+				    <li>
+					<label for="volume_font-style">Volume Title Font:</label>
+					<span id="volume_font-style" name="volume_font-style" data-css=".volume_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:18px;}">Arial, 18px, color: rgb(0, 0, 0)</span>
+					<div class="fontSelector" data-for="volume_font-style"></div>
+				    </li>
+				</ol>
+				</li>
+				<li>
+				    <label for="volumeHeight">Volume Height (% of chart):</label>
+				    <input id="volumeHeight" name="volumeHeight" type="text" class="short" value="20" />
+				</li>
+				<li>
+				    <label for="volumeColor">Volume Fill Color:</label>
+				    <input id="volumeColor" name="volumeColor" type="text" class="short" value="rgb(0, 0, 0)" />
+				    <div class="colorPicker" data-for="volumeColor"></div>
+				</li>
+				<li>
+				    <label for="barWidth">Bar Width (pixels):</label>
+				    <input id="barWidth" name="barWidth" type="text" class="short" value="2" />
+				</li>
+			    </ol>
+		        </li>
+			<li>
+			    <label for="showDuration">Show Duration Options:</label>
+			    <input id="showDuration" name="showDuration" type="checkbox" />
+			</li>
+			<li class="duration drillDown" style="display: none;">
+			    <ol>				
+				<li>
+				    <label for="durButtonColor" class="multiline">Duration Button Color:</label>
+				    <input id="durButtonColor" name="durButtonColor" type="text" class="short" value="rgb(115, 111, 110)" />
+				    <div class="colorPicker" data-for="durButtonColor"></div>
+				</li>
+				<li>
+				    <label for="durSelButtonColor">Selected Duration Button Color:</label>
+				    <input id="durSelButtonColor" name="durSelButtonColor" type="text" class="short" value="rgb(0, 128, 0)" />
+				    <div class="colorPicker" data-for="durSelButtonColor"></div>
+				</li>
+				<li>
+				    <label for="durButton_font-style">Duration Button Font:</label>
+				    <span id="durButton_font-style" name="durButton_font-style" data-css=".durButton_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:16px;}">Arial, 16px, color: rgb(0, 0, 0)</span>
+				    <div class="fontSelector" data-for="durButton_font-style"></div>
+				</li>
+				<li>
+				    <label for="durButtonRadius">Duration Button Corner Radius (pixels):</label>
+				    <input id="durButtonRadius" name="durButtonRadius" type="text" class="short" value="10" />
+				</li>
+				<li>
+				    <label for="durRotate">Rotate Every (seconds):</label>
+				    <input id="durRotate" name="durRotate" type="text" class="short" value="10" />
+				</li>
+				<li>
+				    <label for="durReturn">Rotation Resumes After (seconds):</label>
+				    <input id="durReturn" name="durReturn" type="text" class="short" value="25" />
+				</li>
+			    </ol>
+		        </li>
+			<li>
+			    <label for="showComparison">Show Comparative Instruments:</label>
+			    <input id="showComparison" name="showComparison" type="checkbox" />
+			</li>
+			<li class="comparison drillDown" style="display: none;">
+			    <ol>				
+				<li>
+				    <label for="compInstruments">Comparative Instruments*:</label>
+				    <input id="compInstruments" name="compInstruments" type="text" class="medium" value="MSFT.O, GOOG.O, INTC.O" required />
+				    <a href="#" class="stockSelector" data-for="compInstruments">Stock Selector</a>
+				</li>
+				<li>
+				    <label for="compNames">Comparative Instrument Names:</label>
+				    <input id="compNames" name="compNames" type="text" class="long" value="Microsoft, Google, Intel" />
+				</li>
+				<li>
+				    <label for="compLineColor">Comparison Line Color:</label>
+				    <input id="compLineColor" name="compLineColor" type="text" class="short" value="rgb(0, 128, 0)" />
+				    <div class="colorPicker" data-for="compLineColor"></div>
+				</li>
+				<li>
+				    <label for="compButton_font-style">Comparison Button Font:</label>
+				    <span id="compButton_font-style" name="compButton_font-style" data-css=".compButton_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:16px;}">Arial, 16px, color: rgb(0, 0, 0)</span>
+				    <div class="fontSelector" data-for="compButton_font-style"></div>
+				</li>
+				<li>
+				    <label for="compButtonRadius">Comparison Button Corner Radius (pixels):</label>
+				    <input id="compButtonRadius" name="compButtonRadius" type="text" class="short" value="10" />
+				</li>
+				<li>
+				    <label for="compButtonColor" class="multiline">Comparison Button Color:</label>
+				    <input id="compButtonColor" name="compButtonColor" type="text" class="short" value="rgb(115, 111, 110)"/>
+				    <div class="colorPicker" data-for="compButtonColor"></div>
+				</li>
+				<li>
+				    <label for="compSelButtonColor" class="multiline">Selected Comparison Button Color:</label>
+				    <input id="compSelButtonColor" name="compSelButtonColor" type="text" class="short" value="rgb(0, 128, 0)" />
+				    <div class="colorPicker" data-for="compSelButtonColor"></div>
+				</li>
+				<li>
+				    <label for="compReturn" class="multiline">Chart Returns to Default (seconds):</label>
+				    <input id="compReturn" name="compReturn" type="text" class="short" value="25" />
+				</li>
+			    </ol>
+		        </li>    
+			<li>
+			    <label for="showAxis">Show Axis:</label>
+			    <input id="showAxis" name="showAxis" type="checkbox" checked="checked" />
+			</li>
+			<li class="axis drillDown">
+			    <ol>
+				<li>
+				    <label for="axis_font-style">Axis Font:</label>
+				    <span id="axis_font-style" name="axis_font-style" data-css=".axis_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:10px;}">Arial, 10px, color: rgb(0, 0, 0)</span>
+				    <div class="fontSelector" data-for="axis_font-style"></div>
+				</li>
+				<li>
+				    <label for="axisDecimals">Axis Decimals:</label>
+				    <select id="axisDecimals" name="axisDecimals" class="short">
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2" selected="selected">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+				    </select>
+				</li>
+				<li>
+				    <label for="axisLineColor">Axis Line Color:</label>
+				    <input id="axisLineColor" name="axisLineColor" type="text" class="short" value="rgb(0, 0, 0)" />
+				    <div class="colorPicker" data-for="axisLineColor"></div>
+				</li>
+			    </ol>
+		        </li>
+			<li>
+			    <label for="gridLineColor">Grid Line Color:</label>
+			    <input id="gridLineColor" name="gridLineColor" type="text" class="short" value="rgb(115, 111, 110)" />
+			    <div class="colorPicker" data-for="gridLineColor"></div>
+			</li>
+			<li>
+			    <label for="chartPlotLineColor">Chart Plot Line Color:</label>
+			    <input id="chartPlotLineColor" name="chartPlotLineColor" type="text" class="short" value="rgb(255, 128, 64)" />
+			    <div class="colorPicker" data-for="chartPlotLineColor"></div>
+			</li>
+			<li class="fill" style="display: none;">
+			    <label for="chartFillColor">Chart Fill Color:</label>
+			    <input id="chartFillColor" name="chartFillColor" type="text" class="short" value="transparent" />
+			    <div class="colorPicker" data-for="chartFillColor"></div>
+			</li>
+		    </ol>
+		</form>
+	    </div>
+	    
+	    <link rel="stylesheet" href="https://s3.amazonaws.com/Common-Production/Settings/css/Settings.css" />
+	    
+	    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    
+	    <script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+	    <script type="text/javascript" src="https://s3.amazonaws.com/Gadget-Financial-Chart/FinancialChart.min.js"></script>
+    
+            <script type="text/javascript">
+		var prefs = new gadgets.Prefs(),
+		    chart = null;
+                                
+                function init() {
+		    google.setOnLoadCallback(function() {
+			$(function() {
+			    chart = new RiseVision.FinancialChart.Settings();
+			    
+			    gadgets.rpc.register("rscmd_getSettings", chart.getSettings);
+			    gadgets.rpc.register("rscmd_financialSelectorCallback", chart.setStocks);
+			    gadgets.rpc.register("rscmd_colorPickerCallback", chart.setColor);
+			    gadgets.rpc.register("rscmd_fontSelectorCallback", chart.setFont);			    
+			    
+			    chart.initSettings();
+			});
+		    });
+                }
+		
+                gadgets.util.registerOnLoadHandler(init); 
+            </script>
+	]]>
+    </Content>
+    <Content type="html">
+	<![CDATA[
+	<style type="text/css">
+	    * {
+		box-sizing: border-box;
+	    }
+	    
+	    body {
+		background-color: transparent;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-o-user-select: none;
+		user-select: none;
+	    }
+	    
+	    #container {
+		width: 100%;
+		height: 100%;
+	    }
+	    
+	    #buttons,
+	    #title,
+	    #disclaimer,
+	    #durations,
+	    #volumeTitle,
+	    .envision-finance {
+		width: 90%;
+	    }
+	    
+	    /* Chart Titles */
+	    #title {		
+		overflow: hidden;
+	    }	    
+		#title #instrument {
+		    float: left;
+		}		
+		#title #last {
+		    margin-right: 20px;
+		}
+		#title #arrow {
+		    background-size: contain;
+		    background-repeat: no-repeat;
+		}
+		#title #last,
+		#title #arrow,
+		#title #changeLabel,
+		#title #changeValue {
+		    float: right;
+		}		
+		
+	    #priceChart {
+		margin-top: 5px;
+		margin-bottom: 2em; /* Because priceChart has the axis_font-style CSS class applied to it, the margin will be relative to the font size of the axis. */
+	    }
+	    
+	    #volumeTitle {
+		margin-top: 0.5em;
+	    }
+	    
+	    /* Disclaimer */
+	    #disclaimer {
+		display: none;
+		padding: 0.5em 0;
+		font-style: italic;
+		font-size: 10px;
+	    }
+	    #disclaimer.right, #volumeTitle {
+		text-align: right;	
+	    }
+	    
+	    /* Duration buttons */
+	    #durations {
+		text-align: center;
+		padding-top: 5px;
+	    }
+	    .duration {
+		display: inline-block;
+		-moz-border-radius: __UP_durButtonRadius__px;
+		-webkit-border-radius: __UP_durButtonRadius__px;
+		border-radius: __UP_durButtonRadius__px;
+		border: 2px solid #000000;
+		padding: 6px 24px;
+		text-decoration: none;
+		background-color: __UP_durButtonColor__;
+	    }
+	    .duration.selected {		
+		background-color: __UP_durSelButtonColor__;
+	    }
+	    
+	    /* Comparative instrument buttons */
+	    #buttons {
+		display: none;
+		padding: 0.5em 0;
+		text-align: right;
+	    }
+	    .button {
+		display: none;
+		-moz-border-radius: __UP_compButtonRadius__px;
+		-webkit-border-radius: __UP_compButtonRadius__px;
+		border-radius: __UP_compButtonRadius__px;
+		border: 2px solid #dcdcdc;
+		padding: 6px 24px;
+		text-decoration: none;
+		background-color: __UP_compButtonColor__;
+	    }
+	    .button.selected {		
+		background-color: __UP_compSelButtonColor__;
+	    }
+	    
+	    #error {
+		display: none;
+	    }
+	    
+	    .error {		
+		padding: 1em;
+		font-size: 20px;
+		color: red;
+	    }
+	    
+	    .hidden {
+		visibility: hidden;
+	    }
+	</style>
+	
+	<div id="container">	    
+	    <div id="disclaimer" class="hidden">Market Data by Thomson Reuters - Delayed 20 Minutes</div>
+	    <div id="buttons" class="hidden compButton_font-style">Compare To:  </div>
+	    <div id="title" class="hidden">
+		<span id="instrument" class="title_font-style"></span>		
+		<span id="changeValue" class="title_font-style"></span>
+		<div id="arrow"></div>
+		<span id="changeLabel" class="title_font-style">Change&nbsp;</span>
+		<span id="last" class="title_font-style"></span>
+	    </div>
+	    <div id="priceChart" class="hidden axis_font-style"></div>
+	    <div id="volumeTitle" class="volume hidden volume_font-style"></div>
+	    <div id="volumeChart" class="volume hidden"></div>
+	    <div id="durations" class="hidden"></div>
+	    <div id="error" class="error"></div>
+	</div>	
+	
+	<link rel="stylesheet" href="https://s3.amazonaws.com/Common-Production/envision/css/envision.css" />
+	
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="http://datejs.googlecode.com/svn/trunk/build/date.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/envision/envision.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/spinner/jquery.spinner.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Gadget-Financial-Chart/RiseVision.Templates.Finance.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Gadget-Financial-Chart/FinancialChart.min.js"></script>
+
+	<!-- Load after envision.js. -->
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/envision/grid.min.js"></script>
+    
+	<script>
+	    var prefs = new gadgets.Prefs(),
+		controller = null,
+		pageInitialized = false;
+		
+	    //Issue 1058 - Disable right-click.
+	    window.oncontextmenu = function() {
+		return false;
+	    };
+		
+	    //Add Analytics code.
+	    var _gaq = _gaq || [];
+	    
+	    _gaq.push(['_setAccount', 'UA-41395348-2']);
+	    _gaq.push(['_trackPageview']);
+	  
+	    (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	    })();
+		    
+	    function init() {
+		var id = prefs.getString("id");
+		
+		//Ready event seems to fire twice sometimes.
+		if (pageInitialized) {
+		    return;
+		}
+		
+		pageInitialized = true;
+		
+		gadgets.rpc.register("rscmd_play_" + id, play);
+		gadgets.rpc.register("rscmd_pause_" + id, pause);
+		gadgets.rpc.register("rscmd_stop_" + id, stop);
+		
+		google.setOnLoadCallback(function() {
+		    gadgets.rpc.register("rsparam_set_" + id, function(name, value) {
+			if (prefs.getBool("acceptance")) {
+			    initChart(value);
+			}		    
+			else {
+			    $("#container").text("You must check the Acceptance setting in order to use this Gadget.");
+			    $("#container").addClass("error");
+			    readyEvent();
+			}
+		    });
+		    
+		    gadgets.rpc.call("", "rsparam_get", null, id, "displayId");
+		});
+            }
+	    
+	    //Initialize the gadget.		
+	    function initChart(displayID) {
+		var id = prefs.getString("id");
+		
+		controller = new RiseVision.FinancialChart.Controller(displayID);
+		
+		gadgets.rpc.register("rscmd_setInstrument", function(instrument, resumeRotation) {
+		    controller.setInstrument.call(controller, instrument, resumeRotation);
+		});
+		
+		gadgets.rpc.register("rscmd_setDuration", function(duration) {
+		    controller.setDuration.call(controller, duration);
+		});
+		
+		gadgets.rpc.register("rscmd_stopRotation", function() {
+		    controller.stopRotation.call(controller);
+		});
+		
+		gadgets.rpc.register("rsparam_set_" + id, controller.getAdditionalParams);
+		gadgets.rpc.call("", "rsparam_get", null, id, "additionalParams");
+	    }
+	    
+	    function play() {
+		controller.play();
+	    }
+	    
+	    function pause() {
+		controller.pause();
+	    }
+	    
+	    function stop() {
+		controller.pause();
+	    }
+	    
+	    //Send "READY" event to the Viewer.
+	    function readyEvent() {		
+		gadgets.rpc.call("", "rsevent_ready", null, prefs.getString("id"), true, true, true, true, true);
+	    }
+
+	    //Send "DONE" event to the Viewer.
+	    function doneEvent() {
+		gadgets.rpc.call("", "rsevent_done", null, prefs.getString("id"));
+	    }
+	    
+	    $(document).ready(function() {
+		init();
+	    });																													    
+	</script>]]>
+    </Content> 
+</Module>

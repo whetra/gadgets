@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+	<![CDATA[
+	body {
+	    background: transparent;
+	    user-select: none;
+	    -moz-user-select: none;
+	    -webkit-user-select: none;
+	    -khtml-user-select: none; 
+	}		
+	table {
+	    width: 100%;
+	    border-collapse: collapse;
+	}
+	th, td {
+	    text-align: left;
+	    font-weight: normal;
+	    -webkit-box-sizing: border-box;
+	    -moz-box-sizing: border-box;
+	    box-sizing: border-box;
+	}
+	
+	#scrollContainer {
+	    height: 100%;
+	    overflow: hidden;
+	}
+	
+	/* Color Conditions:
+	   changeUpIncrease - Change Up Green Down Red - Styling for Change Up Green
+	   changeUpDecrease - Change Up Green Down Red - Styling for Change Down Red
+	   changeDownDecrease - Change Down Green Up Red - Styling for Change Down Green
+	   changeDownIncrease - Change Down Green Up Red - Styling for Change Up Red
+	   valuePositivePositive - Value Positive Green Negative Red - Styling for Value Positive Green
+	   valuePositiveNegative - Value Positive Green Negative Red - Styling for Value Negative Red
+	   valueNegativeNegative - Value Negative Green Positive Red - Styling for Value Negative Green
+	   valueNegativePositive - Value Negative Green Positive Red - Styling for Value Positive Red */
+	.changeUpIncrease, .changeDownDecrease, .valuePositivePositive, .valueNegativeNegative {
+	    color: rgb(0, 255, 0);
+	}
+	.changeUpDecrease, .changeDownIncrease, .valuePositiveNegative, .valueNegativePositive {
+	    color: red;
+	}
+	/* Change these to over-ride the Heading Font and Data Font. */
+	.heading_font-style {}
+	.data_font-style {}
+	]]>
+    </Style>
+    <Layout>
+	<![CDATA[
+	<div id="scrollContainer">
+	    <table class="page">
+		<thead>
+		    <tr class="heading_font-style">
+			<!-- The headings for Columns A-D. There must be one heading per column.
+			     Change the text to something more appropriate for your particular data. -->
+			<th>Name</th>
+			<th>Logo</th>
+			<th>Description</th>
+			<th>QR Code</th>
+		    </tr>
+		</thead>
+		<tbody>
+		    <tr class="repeat item data_font-style">
+			<!-- Shows data in Columns A-D. Customize this for your particular data. -->
+			<td class="A"></td>
+			<td class="B image"></td>
+			<td class="C"></td>
+			<td class="D qrCode"></td>
+		    </tr>
+		</tbody>
+	    </table>
+	</div>
+	]]>
+    </Layout>
+</Template>
+

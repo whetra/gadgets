@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module> 
+    <ModulePrefs title="Rise Vision Financial Gadget" height="400" title_url="http://www.risevision.com/help/users/what-are-gadgets/premium-gadgets/rise-vision-financial/">
+        <Require feature="rpc" /> 
+        <Optional feature="rise-api"> 
+            <Param name="reports_ready" /> 
+        </Optional> 
+    </ModulePrefs> 
+    <UserPref name="disclaimerFont" />
+    <UserPref name="disclaimerLoc" />
+    <UserPref name="acceptance" />
+    <UserPref name="scrollDirection" />
+    <UserPref name="scrollBy" />
+    <UserPref name="scrollHold" />
+    <UserPref name="scrollSpeed" />
+    <UserPref name="scrollResumes" />    
+    <UserPref name="rowPadding" /> 
+    <UserPref name="colPadding" />
+    <UserPref name="colCount" />
+    <UserPref name="bgColor" />
+    <UserPref name="rowColor" />
+    <UserPref name="altRowColor" />
+    <UserPref name="selRowColor" />
+    <UserPref name="useDefault" />
+    <UserPref name="layoutURL" />
+    <UserPref name="id" />
+    <UserPref name="rsW" />
+    <UserPref name="rsH" />
+    <Content type="html" view="editor">
+        <![CDATA[
+	    <style>
+		#settings {
+		    display: none;
+		}
+	    </style>
+	    <div id="wrapper">
+		<div class="errors"></div>
+		<form id="settings" name="settings">
+		    <ol>
+			<li>
+			    <label for="instruments">
+				<a href="#" class="tooltip">Instruments*:<span>Enter financial instrument symbols, comma separated, or use the Stock Selector to find the symbol you want</span></a>
+			    </label>
+			    <input id="instruments" name="instruments" type="text" class="medium" value="AA.N, AXP.N, BA.N, BAC.N, CAT.N, CSCO.O, CVX.N ,DD.N, DIS.N, GE.N, HD.N, HPQ.N, IBM.N, INTC.O, JNJ.N, JPM.N, KO.N, KRFT.O, MCD.N, MMM.N, MRK.N, MSFT.O, PFE.N, PG.N, T.N, TRV.N, UTX.N, VZ.N, WMT.N, XOM.N" required autofocus />
+			    <a id="selector" href="#">Stock Selector</a>
+			</li>			
+			<li>
+			    <label for="scrollDirection">
+				<a href="#" class="tooltip">Scroll Direction:<span>Direction in which the data should scroll</span></a>
+			    </label>
+			    <select id="scrollDirection" name="scrollDirection" class="short">
+				<option value="none">None</option>
+				<option value="up">Up</option>
+				<option value="down" selected="selected">Down</option>
+			    </select>
+			</li>
+			<li class="scroll drillDown" style="display: none;">
+			    <ol>
+				<li>
+				    <label for="scrollBy">
+					<a href="#" class="tooltip">Scroll By:<span>How to scroll the data if not all of it is visible</span></a>
+				    </label>
+				    <select id="scrollBy" name="scrollBy" class="short">
+					<option value="item">Row</option>
+					<option value="page">Page</option>
+					<option value="continuous" selected="selected">Continuous</option>
+				    </select>
+				</li>
+				<li class="scrollHold drillDown" style="display: none;">
+				    <label for="scrollHold">
+					<a href="#" class="tooltip">Scroll Hold (seconds):<span>Number of seconds to pause after each scroll</span></a>
+				    </label>
+				    <input id="scrollHold" name="scrollHold" type="text" class="short" value="10" />
+				</li>
+				<li>
+				    <label for="scrollSpeed">
+					<a href="#" class="tooltip">Scroll Speed:<span>Speed at which to scroll the data</span></a>
+				    </label>
+				    <select id="scrollSpeed" name="scrollSpeed" class="short">
+					<option value="slowest">Slowest</option>
+					<option value="slow">Slow</option>
+					<option value="medium" selected="selected">Medium</option>
+					<option value="fast">Fast</option>
+					<option value="fastest">Fastest</option>
+				    </select>
+				</li>
+				<li>
+				    <label for="scrollResumes">
+					<a href="#" class="tooltip">Scroll Resumes (seconds):<span>Number of seconds to pause after scrolling is stopped by a touch</span></a>
+				    </label>
+				    <input id="scrollResumes" name="scrollResumes" type="text" class="short" value="5" />
+				</li>
+			    </ol>
+			</li>
+			<li>
+			    <label for="rowPadding">
+				<a href="#" class="tooltip">Row Padding (pixels):<span>Amount of space between rows</span></a>
+			    </label>
+			    <input id="rowPadding" name="rowPadding" type="text" class="short" value="25" />
+			</li>
+			<li>
+			    <label for="colPadding">
+				<a href="#" class="tooltip">Column Padding (pixels):<span>Amount of space between columns</span></a>
+			    </label>
+			    <input id="colPadding" name="colPadding" type="text" class="short" value="25" />
+			</li>
+			<li>
+			    <label for="colCount">
+				<a href="#" class="tooltip">Number of Fields to Format:<span>Number of fields of the data to format</span></a>
+			    </label>
+			    <select id="colCount" name="colCount" class="short">
+				<option value="1" selected="selected">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="10">10</option>
+			    </select>
+			</li>
+			<li>
+			    <label for="bgColor">Background Color:</label>
+			    <input id="bgColor" name="bgColor" type="text" class="short" />
+			    <div class="colorPicker" data-for="bgColor"></div>
+			</li>
+			<li>
+			    <label for="heading_font-style">Heading Font:</label>
+			    <span id="heading_font-style" name="heading_font-style" data-css=".heading_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:18px;}">Arial, 18px, color: rgb(0, 0, 0)</span>
+			    <div class="fontSelector" data-for="heading_font-style"></div>
+			</li>
+			<li>
+			    <label for="data_font-style">Data Font:</label>
+			    <span id="data_font-style" name="data_font-style" data-css=".data_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:30px;}">Arial, 30px, color: rgb(0, 0, 0)</span>
+			    <div class="fontSelector" data-for="data_font-style"></div>
+			</li>
+			<li>
+			    <label for="rowColor">Row Color:</label>
+			    <input id="rowColor" name="rowColor" type="text" class="short" />
+			    <div class="colorPicker" data-for="rowColor"></div>
+			</li>
+			<li>
+			    <label for="altRowColor">Alternate Row Color:</label>
+			    <input id="altRowColor" name="altRowColor" type="text" class="short" />
+			    <div class="colorPicker" data-for="altRowColor"></div>
+			</li>
+			<li>
+			    <label for="selRowColor">Selected Row Color:</label>
+			    <input id="selRowColor" name="selRowColor" type="text" class="short" />
+			    <div class="colorPicker" data-for="selRowColor"></div>
+			</li>
+			<li>
+			    <label for="disclaimerFont">
+				<a href="#" class="tooltip">Disclaimer Font:<span>Data provider acknowledgement and disclaimer font</span></a>
+			    </label>
+			    <select id="disclaimerFont" name="disclaimerFont" class="short">
+				<option value="Arial, Arial, Helvetica, sans-serif">Arial</option>
+				<option value="Arial Black, Arial Black, Gadget, sans-serif">Arial Black</option>
+				<option value="Comic Sans MS, Comic Sans MS, cursive">Comic Sans MS</option>
+				<option value="Courier New, Courier New, Courier, monospace">Courier New</option>
+				<option value="Georgia, Georgia, serif">Georgia</option>
+				<option value="Impact, Impact, Charcoal, sans-serif">Impact</option>
+				<option value="Lucida Console, Monaco, monospace">Lucida Console</option>
+				<option value="Lucida Sans Unicode, Lucida Grande, sans-serif">Lucida Sans Unicode</option>
+				<option value="MS Sans Serif, Geneva, sans-serif">MS Sans Serif</option>
+				<option value="MS Serif, New York, serif">MS Serif</option>
+				<option value="Palatino Linotype, Book Antiqua, Palatino, serif" >Palatino Linotype</option>
+				<option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+				<option value="Times New Roman, Times, serif">Times New Roman</option>
+				<option value="Trebuchet MS, Helvetica, sans-serif">Trebuchet MS</option>
+				<option value="Verdana, Verdana, Geneva, sans-serif" selected="selected">Verdana</option>				
+			    </select>
+			</li>
+			<li>
+			    <label for="disclaimerLoc">
+				<a href="#" class="tooltip">Disclaimer Location:<span>Data provider acknowledgement and disclaimer location</span></a>
+			    </label>
+			    <select id="disclaimerLoc" name="disclaimerLoc" class="short">
+				<option value="topRight">Top Right</option>
+				<option value="bottomRight" selected="selected">Bottom Right</option>
+				<option value="topLeft">Top Left</option>
+				<option value="bottomLeft">Bottom Left</option>
+			    </select>
+			</li>
+			<li>
+			    <label>Acceptance:</label>
+			    <input id="acceptance" name="acceptance" type="checkbox" />
+			    <label for="acceptance" class="right">I acknowledge that there is currently no charge for this Gadget, but at a date that has yet to be determined, it will cost $10 per display, per month.  At that time I will have 30 days to decide if I wish to continue using this Gadget.</label>
+			</li>
+			<li>
+			    <label for="useDefault">
+				<a href="#" class="tooltip">Use Default Layout:<span>Whether to use a default or a custom layout</span></a>
+			    </label>
+			    <input id="useDefault" name="useDefault" type="checkbox" checked="checked" />
+			</li>
+			<li class="layoutURL drillDown" style="display: none;">
+			    <label for="layoutURL">Layout URL*:</label>
+			    <input id="layoutURL" name="layoutURL" type="text" class="long" required />
+			</li>
+		    </ol>
+		</form>
+	    </div>
+	    
+	    <link rel="stylesheet" href="https://s3.amazonaws.com/Common-Production/Settings/css/Settings.css" />
+	    
+	    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    
+	    <script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+	    <script type="text/javascript" src="https://s3.amazonaws.com/Gadget-Financial-Table/FinancialTable.min.js"></script>
+    
+            <script type="text/javascript">
+		var prefs = new gadgets.Prefs(),
+		    financial = null;
+                                
+                function init() {
+		    google.setOnLoadCallback(function() {
+			$(function() {
+			    financial = new RiseVision.FinancialSettings();
+			    
+			    gadgets.rpc.register("rscmd_getSettings", financial.getSettings);
+			    gadgets.rpc.register("rscmd_financialSelectorCallback", financial.setStocks);
+			    gadgets.rpc.register("rscmd_colorPickerCallback", financial.setColor);
+			    gadgets.rpc.register("rscmd_fontSelectorCallback", financial.setFont);
+			    
+			    financial.initSettings();
+			});
+		    });
+                }
+		
+                gadgets.util.registerOnLoadHandler(init); 
+            </script>
+	]]>
+    </Content>
+    <Content type="html"> 
+        <![CDATA[
+        <style type="text/css">
+	    * {
+		/* Important: This is necessary to minimize column misalignment between the headings and the data. */
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+	    }
+            body {
+		background-color: transparent;
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none; 
+	    }
+	    table {
+		border-collapse: collapse;
+	    }
+	    tbody tr {
+		white-space: nowrap;
+	    }
+	    
+	    #container {				
+		width: 100%;
+		height: 95%;
+	    }
+	    #container.fullScreen {
+		height: 100%;
+	    }
+	    
+	    .error {
+		padding: 1em;
+		font-size: 20px;
+		color: red;
+	    }	    	   
+	    
+	    /* Row Colors */
+	    .even {
+		background-color: __UP_rowColor__;
+	    }
+	    .odd {
+		background-color: __UP_altRowColor__;
+	    }
+	    .selected {
+		background-color: __UP_selRowColor__;
+	    }
+
+	    /* Conditions */
+	    #financial.default .changeUpIncrease,
+	    #financial.default .changeDownDecrease,
+	    #financial.default .valuePositivePositive,
+	    #financial.default .valueNegativeNegative {
+		color: green !important;
+	    }
+	    #financial.default .changeUpDecrease,
+	    #financial.default .changeDownIncrease,
+	    #financial.default .valuePositiveNegative,
+	    #financial.default .valueNegativePositive {
+		color: red !important;
+	    }
+	    
+	    /* Logos and arrows */	    
+	    #financial.default .logo img, .arrow {
+		vertical-align: top;
+	    }
+	    
+	    /* Disclaimer */
+	    #disclaimer.default {
+		padding: 0.5em;
+		font-style: italic;
+		font-size: 10px;
+	    }
+	    #disclaimer.default.top {
+		position: relative;	/* To have rows scroll underneath the disclaimer. */		
+	    }
+	    #disclaimer.default.top.right {
+		text-align: right;	
+	    }
+	    #disclaimer.default.bottom {
+		position: absolute;
+		bottom: 0;
+	    }
+	    #disclaimer.default.bottom.right {
+		right: 0;
+	    }
+        </style> 
+    
+	<div id="container">
+	</div>
+ 
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="http://datejs.googlecode.com/svn/trunk/build/date.js"></script>
+    
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/dataTables/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/InfiniteScroll/InfiniteScroll.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Gadget-Financial-Table/FinancialTable.min.js"></script>
+	
+        <script type="text/javascript"> 
+            var prefs = new gadgets.Prefs(),
+		financial = null;
+		
+	    //Issue 1053 - Disable right-click.
+	    window.oncontextmenu = function() {
+		return false;
+	    };
+		
+	    //Add Analytics code.
+	    var _gaq = _gaq || [];
+	    
+	    _gaq.push(['_setAccount', 'UA-41395348-1']);
+	    _gaq.push(['_trackPageview']);
+	  
+	    (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	    })();
+	    
+            function init() {
+                var id = prefs.getString("id"),				
+		    bgColor = prefs.getString("bgColor");
+		
+                if (bgColor && bgColor != "") {
+                    document.body.style.background = bgColor;
+                }
+		
+		if (id && id != "") {
+		    gadgets.rpc.register("rscmd_play_" + id, play);
+		    gadgets.rpc.register("rscmd_pause_" + id, pause);
+		    gadgets.rpc.register("rscmd_stop_" + id, stop);
+		    gadgets.rpc.register("rsparam_set_" + id, initFinancial);
+		    gadgets.rpc.call("", "rsparam_get", null, id, "displayId");
+		}
+            }
+	    
+	    function initFinancial(name, value) {
+		var id = prefs.getString("id");
+		
+		if (prefs.getBool("acceptance")) {
+		    financial = new RiseVision.Financial(value);
+		
+		    gadgets.rpc.register("rscmd_getInstrument", function(index) {
+			return financial.getInstrument.call(financial, index);
+		    });
+		
+		    gadgets.rpc.register("rsparam_set_" + id, financial.getAdditionalParams);
+		    gadgets.rpc.call("", "rsparam_get", null, id, "additionalParams");
+		}
+		else {
+		    $("#container").text("You must check the Acceptance setting in order to use this Gadget.");
+		    $("#container").addClass("error");
+		    readyEvent();
+		}
+	    }
+	    
+	    function play() {
+		if (financial != null) {
+		    financial.play();
+		}
+	    }
+	    
+	    function pause() {
+		if (financial != null) {
+		    financial.pause();
+		}
+	    }
+	    
+	    function stop() {
+		if (financial != null) {
+		    financial.pause();
+		}
+	    }
+	    
+            // sends "READY" event to the Viewer
+            function readyEvent() {
+                gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+            }
+            
+            // sends "DONE" event to the Viewer
+            function doneEvent() {
+                gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+            }
+            
+	    gadgets.util.registerOnLoadHandler(init);
+        </script>]]>
+    </Content> 
+</Module>

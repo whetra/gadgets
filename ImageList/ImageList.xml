@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+	<ModulePrefs title="Rise Image List Gadget" height="400" title_url="http://www.risevision.com/help/gadgets/gadget-help-files/rise-vision-image-list/">
+		<!-- "rpc" feature is necessary for communicating with Viewer -->
+		<Require feature="rpc" />
+		<!-- "rise-api" feature with "reports_ready" parameter tells Rise Gadget Server that Rise Background Gadget supports sending "ready" event -->
+		<Optional feature="rise-api">
+			<Param name="reports_ready" />
+		</Optional>
+	</ModulePrefs>
+	<UserPref name="id" display_name="ID" datatype="hidden" />
+	<UserPref name="url" display_name="URL" datatype="string" required="true" />
+	<UserPref name="backgroundColor" display_name="Background Color" datatype="string" />
+	<UserPref name="rsW" display_name="Container Width" datatype="hidden" />
+	<UserPref name="rsH" display_name="Container Height" datatype="hidden" />	
+	<Content type="html">
+		<![CDATA[
+		<style type="text/css">
+			body {
+				background-color: transparent;
+			}
+			
+			/* The following CSS implements vertical and horizontal center alignment. */
+			#cnt {
+				width: __UP_rsW__; 
+				height: __UP_rsH__;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+			}
+                        
+                        #cnt img {
+                                position: absolute;
+                        }
+                        
+                        .fade {
+                                -webkit-transition: opacity 1s ease-in-out;
+                                -moz-transition: opacity 1s ease-in-out;
+                                -o-transition: opacity 1s ease-in-out;
+                                transition: opacity 1s ease-in-out;
+                                -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+                        }
+                            
+                        .fade_show {
+                                opacity: 1;
+                                -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=1)";
+                                filter: alpha(opacity = 1);
+                        }
+                            
+                        .fade_hide {
+                                opacity: 0;
+                                filter: alpha(opacity = 0);
+                        }
+                        
+                        .zoom {
+                                -webkit-transition: all 1s ease-in-out;
+                                -moz-transition: all 1s ease-in-out;
+                                -o-transition: all 1s ease-in-out;
+                                transition: all 1s ease-in-out;
+                                -webkit-transform-origin: bottom left;
+                                -webkit-backface-visibility: hidden;
+                        }
+                            
+                        .zoom_show {
+                                -webkit-transform: scale(1);       
+                        }
+                            
+                        .zoom_hide {
+                                -webkit-transform: scale(0);
+                        }
+                            
+                        .rotate {
+                                -webkit-transition: all 1s ease-in-out;                                
+                                -moz-transition: all 1s ease-in-out;
+                                -o-transition: all 1s ease-in-out;
+                                transition: all 1s ease-in-out;
+                                -webkit-backface-visibility: hidden;
+                        }
+                            
+                        .rotate_show {
+                                -webkit-transform: rotate(-360deg) scale(1);
+                        }
+                            
+                        .rotate_hide {
+                                -webkit-transform: rotate(360deg) scale(0); 
+                        }
+		</style>
+        
+                <div id="cnt">
+			<img id="image1" src="" style="visibility: hidden;">
+                        <img id="image2" src="" style="visibility: hidden;">
+		</div>
+                
+                <script type="text/javascript" src="http://risegadgets.googlecode.com/svn/trunk/common/RiseGadgets.js"></script>
+		<script type="text/javascript">
+			var prefs = new gadgets.Prefs();
+                        var version, transition;
+                        var images = null;
+                        var isLoading = true;
+                        var index = 0;
+                        var imageTimer = null;
+                        var timeLeft;
+                        var currentImage = document.getElementById("image1");
+                        var previousImage = document.getElementById("image2");
+                        var updateInterval = 300000;	//5 minutes
+				
+			//Initialize the gadget.		
+			function showViewer() {
+                                var id = prefs.getString("id");	
+				var backgroundColor = prefs.getString("backgroundColor");                                                                
+				
+                                if (id !== null && id != "") {
+					gadgets.rpc.register("rscmd_play_" + id, play);
+					gadgets.rpc.register("rscmd_pause_" + id, pause);
+					gadgets.rpc.register("rscmd_stop_" + id, stop);
+				}
+                                
+				if (backgroundColor != "") {
+					document.body.style.background = backgroundColor;
+				}
+                                
+                                getPlaylist();
+			}
+                        
+                        function getPlaylist() {
+                                var params = {};
+                                var url = prefs.getString("url");
+                                var ch = "?";
+                                
+                                //Append a random number to the URL to prevent cached results from being returned.
+                                if (url.indexOf(ch) != -1) {
+                                    ch = "&";                                   
+                                }
+
+                                url = url + ch + Math.ceil(Math.random() * 100);                              
+                                params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+                                //params[gadgets.io.RequestParameters.REFRESH_INTERVAL] = 0;
+                                gadgets.io.makeRequest(url, getImages, params);
+                        }
+                        
+                        function getImages(obj) {
+                                var jsonData = obj.data;
+                                var url, urls, duration;
+                                
+                                //If the version has been changed, reload all of the images.
+                                if (jsonData.version != version) {
+                                        version = jsonData.version;
+                                        transition = jsonData.transition;
+                                        images = new Array();	
+                                                		
+                			//Store all the images.
+                			for (var i = 0; i < jsonData.images.length; i++)
+                			{
+                                                images[i] = new Image();
+                                                images[i].url = jsonData.images[i].url;
+                                                images[i].duration = jsonData.images[i].duration;
+                			}                                        
+                                
+                                        if (isLoading) {
+                                                isLoading = false;
+                                    
+                                                //Don't call ready if there are no images.
+                                                if (images.length > 0)
+                                                        readyEvent();
+                                        }
+                                }
+                                
+                                setTimeout("getPlaylist()", updateInterval);
+                        }
+                        
+                        //Show the image.
+                        function showImage() {
+                                var cnt = document.getElementById("cnt");
+                                var settings = {
+                                    url: this.url,
+                                    rsW: prefs.getInt("rsW"),
+                                    rsH: prefs.getInt("rsH"),
+                                    callback: function(newWidth, newHeight) {                                                 
+                                            if (newWidth && newHeight) {
+                                                currentImage.style.width = newWidth;
+                                                currentImage.style.height = newHeight;                                                        
+                                                cnt.style.marginTop = -(newHeight / 2) + "px";   //Vertical alignment.
+                                                cnt.style.marginLeft = -(newWidth / 2) + "px";   //Horizontal alignment.
+                                            }
+                                            
+                                            currentImage.setAttribute("src", this.url);                                                                                                
+                                            currentImage.style.visibility = "visible";
+                                            previousImage.style.visibility = "hidden";
+                                            
+                                            //Apply transitions.
+                                            currentImage.className = transition + " " + transition + "_show";
+                                            previousImage.className = transition + " " + transition + "_hide";
+                                            
+                                            //Swap the images.
+                                            tempImage = currentImage;
+                                            currentImage = previousImage;
+                                            previousImage = tempImage;                                                                                                                    
+                                            
+                                            //Reset the timer and increment the index.
+                                            timeLeft = images[index].duration;
+                                            imageTimer = setTimeout("checkTimer()", 1000);  //1 second
+                                            index++;
+                                    },
+                                    onerror: function(image) {
+                                        //Skip this image and try the next one.
+                                        images.splice(index, 1);
+                                        
+                                        if (index >= images.length) {
+                                            index = 0;
+                                        }
+                                        
+                                        images[index].show(currentImage); 
+                                    }
+                                };
+                                
+                                scaleToFit(settings);                                          
+                        }
+                        
+                        Image.prototype.show = showImage;
+                        
+                        //Keep track of the time remaining on the timer.
+                        function checkTimer() {
+                            timeLeft--;
+
+                            if (timeLeft > 0) {
+                                imageTimer = setTimeout("checkTimer()", 1000);
+                            }
+                            else {
+                                showNextImage();
+                            }
+                        }
+
+                        //Show the next image in the image list.
+                        function showNextImage() {
+                                var tempImage;
+                                
+                                //We've reached the last image.
+                                if (index >= images.length) {
+                                	index = 0;	//Start back at first image.
+                			doneEvent();
+                                }
+                                //Show next image.
+                                else {
+                                        images[index].show();                                     
+                                }                                
+    			}
+                        
+                        function play() {
+                                //Continue from where the timer left off, if applicable.
+                                if (timeLeft && timeLeft > 0) {
+                                        imageTimer = setTimeout("checkTimer()", 1000);
+                                }
+                                else {
+                                        showNextImage();
+                                }
+                        }
+                        
+                        function pause() {
+                                clearTimeout(imageTimer);
+                        }
+                        
+                        function stop() {
+                                clearTimeout(imageTimer);
+                        }
+			
+			//Send "READY" event to the Viewer.
+			function readyEvent() {
+				gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+			}
+	
+			//Send "DONE" event to the Viewer.
+			function doneEvent() {
+				gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+			}
+																																	
+			gadgets.util.registerOnLoadHandler(showViewer);
+		</script>]]>		
+	</Content>
+</Module>

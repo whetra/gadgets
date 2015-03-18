@@ -1,0 +1,99 @@
+/* Flotr */
+.flotr-handles-handle {
+    background: #eee;
+    border: 1px solid #333;
+    position: absolute;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.flotr-handles-handle,
+.flotr-grid-label {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+.flotr-handles-drag {
+    height: 12px;
+    width: 6px;
+}
+.flotr-handles-scroll {
+    height: 6px;
+    cursor: move;
+}
+.flotr-handles-left {
+    cursor: w-resize;
+}
+.flotr-handles-right {
+    cursor: e-resize;
+}
+
+/* Dimensions */
+.envision-finance {
+    clear: both;
+}
+.envision-finance-price .envision-component {
+    height: 100%;
+}
+.envision-finance-volume .envision-component {
+    height: 100%;
+}
+
+/* Bubble Borders */
+.envision-finance-price,
+.envision-finance-volume {
+    border: 1px solid;
+}
+
+/* Labels */
+.flotr-labels {
+    
+}
+
+/* Y-Axis Labels */
+.envision-finance-price .flotr-grid-label {
+  /*margin-left: 4px;*/
+}
+.flotr-grid-label-y {
+  /*width: 5%;
+  right: -5%;*/
+    width: 110%; /* Width of container is 90%, so this will push the label over 10%. */
+}
+.envision-finance-price .flotr-grid-label-y.first {
+    margin-top: -6px;
+}
+.envision-finance-price .flotr-grid-label-y.last {
+    margin-top: 6px;
+}
+
+/* X-Axis Labels */
+.envision-finance-price .flotr-grid-label-x {
+    margin-top: 4px;
+}
+.importantRule {
+    left: 0 !important;
+    text-align: left !important;
+}
+
+/* Mouse Tracker */
+.envision-finance-price .flotr-mouse-value {
+    font-size: 12px;
+}
+.envision-finance-volume .flotr-mouse-value {
+    display: none;
+}
+
+/* Use media queries to resolve issues with not enough space between chart and y-axis when Placeholder is not very wide,
+  or too much space when Placeholder IS wide?
+ @media screen and (max-width: 600px) {
+  .envision-finance {
+    width: 100%;
+  }
+  .envision-finance-price .envision-component {
+    height: 120px;
+  }
+  .envision-finance-volume .envision-component {
+    height: 40px;
+  }
+}*/

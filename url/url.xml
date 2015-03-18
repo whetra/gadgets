@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="URL Gadget" height="400" title_url="http://www.risevision.com/help/users/what-are-gadgets/free-gadgets/rise-vision-url/">
+	<Require feature="rpc" />
+	<Optional feature="rise-api">
+	    <Param name="reports_ready" />
+	</Optional>
+    </ModulePrefs>
+    <UserPref name="id" display_name="ID" datatype="hidden" />
+    <UserPref name="url" display_name="URL" datatype="string" default_value="" required="true" />
+    <UserPref name="scrollx" display_name="Horizontal Scroll (pixels)" required="false" default_value="0" datatype="string" />
+    <UserPref name="scrolly" display_name="Vertical Scroll (pixels)" required="false" default_value="0" datatype="string" />
+    <UserPref name="scrolling" display_name="Scrollbars Enabled" datatype="bool" default_value="false" />
+    <UserPref name="interval" display_name="Data Refresh Interval (minutes)" default_value="0" datatype="enum" required="false">
+	<EnumValue value="0" display_value="Do not refresh"/>
+	<EnumValue value="60000" display_value="1"/>
+	<EnumValue value="300000" display_value="5"/>
+	<EnumValue value="1800000" display_value="30"/>
+	<EnumValue value="3600000" display_value="60"/>
+    </UserPref>
+    <UserPref name="rsW" display_name="Container Width" datatype="hidden" />
+    <UserPref name="rsH" display_name="Container Height" datatype="hidden" />
+    <Content type="html">
+	<![CDATA[
+	<style type="text/css">
+	    body {
+		background-color: transparent;
+	    }
+	    
+	    /* The following CSS implements vertical and horizontal center alignment. */
+	    #cnt {
+		width: __UP_rsW__; 
+		height: __UP_rsH__;
+		position: absolute;
+		top: 0;
+		left: 0;
+	    }
+	    
+	    #urlFrame {
+	    }
+	</style>                
+
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+	<script type="text/javascript">
+	    var prefs = new gadgets.Prefs();
+	    var interval = prefs.getInt("interval");
+	    var url = prefs.getString("url");
+	    
+	    //Add Analytics code.
+	    var _gaq = _gaq || [];
+	    
+	    _gaq.push(['_setAccount', 'UA-41395348-11']);
+	    _gaq.push(['_trackPageview']);
+	  
+	    (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	    })();
+	    
+	    function play() {
+	    }
+	    
+	    function pause() {
+	    }
+	    
+	    function stop() {				
+	    }
+			
+	    //Initialize the gadget.                
+	    function showViewer() {
+		var id = prefs.getString("id");
+		
+		if (id != null && id != "") {								
+		    gadgets.rpc.register("rscmd_play_" + id, play);
+		    gadgets.rpc.register("rscmd_pause_" + id, pause);
+		    gadgets.rpc.register("rscmd_stop_" + id, stop);
+		}
+				    
+		var image = document.getElementById("image");
+		var backgroundColor = prefs.getString("backgroundColor");
+		
+		if (backgroundColor != "") {
+		    document.body.style.background = backgroundColor;
+		}
+		
+		// Add http:// if no protocol parameter exists
+		if (url.indexOf("://") == -1) {
+		    url = "http://" + url;
+		}
+		
+		var gadgetWidth = parseInt(prefs.getString("rsW"));
+		var gadgetHeight = parseInt(prefs.getString("rsH"));
+		var scrollx = parseInt(prefs.getString("scrollx")) >= 0 ? parseInt(prefs.getString("scrollx")) : 0;
+		var scrolly = parseInt(prefs.getString("scrolly")) >= 0 ? parseInt(prefs.getString("scrolly")) : 0;
+		
+		createURL(gadgetWidth, gadgetHeight, scrollx, scrolly, url);
+	    }
+
+	    //Send "READY" event to the Viewer.
+	    function readyEvent() {
+		$('#cnt').css('visibility', 'visible');
+	    
+		gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+	    }
+	    
+	    function createURL(width, height, scrollx, scrolly, url) {
+		try {   	
+		    if ($('cnt')) {
+			//$('#cnt').css('width', width);
+			//$('#cnt').css('height', height);
+			    
+			$('#cnt').css('overflow', 'hidden');
+			$('#cnt').css('visibility', 'hidden');
+    
+			if ($('#urlFrame')) {
+			    $('#urlFrame').css('width', width + scrollx);
+			    $('#urlFrame').css('height', height + scrolly);
+			    $('#urlFrame').css('top', 0);
+			    $('#urlFrame').css('left', 0);
+		    
+			    $('#urlFrame').css('position', 'static');
+			    $('#urlFrame').css('margin', '-' + scrolly + 'px 0 0 ' + '-' + scrollx + 'px');
+			    //myFrame.style['position'] = 'static';
+			    //myFrame.style['margin'] = '-' + scrolly + 'px 0 0 ' + '-' + scrollx + 'px';
+			    
+			    $('#urlFrame').attr('allowTransparency', true);
+			    $('#urlFrame').attr('frameBorder', '0');
+			    $('#urlFrame').attr('scrolling', prefs.getBool('scrolling') ? 'yes' : 'no');
+			    
+			    $('iframe#urlFrame').load(function() {
+				readyEvent();
+			    });
+					    
+			    $('#urlFrame').attr('src', url);
+			}
+		    }
+		}
+		catch (err) {
+		}
+	    }
+	    
+	    function reloadURL() {
+		// Add http:// if no protocol parameter exists
+		if (url.indexOf("://") == -1) {
+		    url = "http://" + url;
+		}
+		
+		$('#urlFrame').attr('src', url);
+	    }
+	    
+	    var refreshurl = setInterval(function() {
+		if (interval <= 0) {
+		    clearInterval(refreshurl);
+		}
+		else {
+		    reloadURL();
+		}
+	    }, interval);
+				    				    
+	    gadgets.util.registerOnLoadHandler(showViewer);
+	</script>
+
+	<div id="cnt">
+	    <iframe id="urlFrame"></iframe>
+	</div>]]>
+    </Content>
+</Module>

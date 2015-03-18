@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+	<ModulePrefs title="Rise Twitter Gadget" height="400"
+		title_url="http://www.risevision.com/help/gadgets/gadget-help-files/rise-vision-twitter-branch/">
+		<Require feature="rpc" />
+		<Optional feature="rise-api">
+			<Param name="reports_ready" />
+		</Optional>
+	</ModulePrefs>
+	<UserPref name="id" display_name="ID" default_value="" datatype="hidden" />
+	<UserPref name="query" display_name="Twitter query" required="true"	default_value="@Risevision" datatype="string" />
+	<UserPref name="tweetTime" display_name="Time between tweets (s)" required="true"	default_value="20" datatype="string" />
+	<UserPref name="enableLinks" display_name="Enable Interactive Links?" datatype="bool" default_value="false" />
+	<UserPref name="rsH" display_name="Container Height" default_value="100%" datatype="hidden" />
+	<UserPref name="rsW" display_name="Container Width"	default_value="100%" datatype="hidden" />
+	<UserPref name="rsS" display_name="Scale" default_value="100" datatype="hidden" />
+	<UserPref name="rsA" display_name="Alignment" default_value="mc" datatype="hidden" />
+	<Content type="html">
+		<![CDATA[
+		<style type="text/css">
+			body, div {
+				background: transparent;
+				font-family:"Century Gothic";
+				font-size: 14px;
+				
+				/* user can't select text on a touchscreen */
+				user-select: none;
+				-moz-user-select: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none; 
+			}
+			
+			.tweetDeckMove {
+				-moz-transition: all 3s linear;
+				-webkit-transition: all 3s linear;
+				-o-transition: all 3s linear;
+				transition: all 3s linear;
+			}
+			
+			.fade {
+				-webkit-transition: opacity 2s ease-in-out;
+				-moz-transition: opacity 2s ease-in-out;
+				-o-transition: opacity 2s ease-in-out;
+				transition: opacity 2s ease-in-out;
+			}
+
+			.tweetBorder {
+				background-color: white;
+				-moz-border-radius: 10px;
+				-webkit-border-radius: 10px;
+				border: 2px solid black;
+				padding: 10px;
+			}
+			
+			.tweetExpire {
+				color: #A0A0A0;
+				border: 2px solid #A0A0A0;
+			}
+			
+			.tweetExpire a {
+				color: #6EABF7;
+			}
+			
+			a {
+				color: #0A5DC3;
+				text-decoration: none;
+			}	
+
+			a:hover {
+				text-decoration: underline;
+			}	
+		</style>
+                
+		<!--
+		****** LOAD SCRIPT FILES HERE ******** 
+		-->
+		<script type="text/javascript" language="javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script type="text/javascript" language="javascript" src="http://risegadgets.googlecode.com/svn/trunk/common/jquery.timers-1.2.js"></script>
+		<script type="text/javascript" language="javascript" src="http://risegadgets.googlecode.com/svn/trunk/twitterBranch/twitter-common.js"></script>
+		<script type="text/javascript" language="javascript" src="http://risegadgets.googlecode.com/svn/trunk/twitterBranch/twitter-data.js"></script>
+		<script type="text/javascript" language="javascript" src="http://risegadgets.googlecode.com/svn/trunk/twitterBranch/twitter-scripts.js"></script>
+		<script type="text/javascript">		 			                                   
+			function play() {
+				// start the tweet visualization
+				startTweetDeck();
+			}
+			
+			function pause() {
+				stop();
+			}
+			
+			function stop() {				
+				stopTweetDeck();
+			}
+			
+			function readyEvent() {
+				gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+			}
+			
+			function doneEvent() {
+				gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+			}
+			
+			// first function to be called onLoad of the Gadget
+			function showViewer() { 
+				var id = prefs.getString("id");
+				     
+				// register your RPC calls (communicate with the viewer application)           
+				// each one of these is a command. the Viewer will send this command, and the function
+				// in the command will be called. For example the first one, once rscmd_play_ + id is called, the play();
+				// function is called               
+				if (id !== null && id != "") {
+					gadgets.rpc.register("rscmd_play_" + id, play);
+					gadgets.rpc.register("rscmd_pause_" + id, pause);
+					gadgets.rpc.register("rscmd_stop_" + id, stop);
+				}                               
+                       
+				if (query !== null && query != "") {
+					gadgetLoaded();
+				}
+				else {
+					// invalid query, just hide the gadget
+					var element = cnt;
+					element.style.display = "none";
+				}                                                               
+			}
+	
+			function writeToLog(logEntry) {
+			    var log = document.getElementById('log');  
+			    log.innerHTML += logEntry + " --- ";
+			}
+				                 
+			// register your onLoad function
+			gadgets.util.registerOnLoadHandler(showViewer);                 
+		</script>
+                
+		<!--
+		****** HTML GOES HERE ***********
+		-->
+		<div id="log" class="div-block" style="height: 150px; width: 400px; position:absolute;z-index:99;visibility:hidden;"></div>
+		<div id="main" style="height:100%;width:100%;">
+		</div>
+                
+        ]]>
+	</Content>
+</Module>

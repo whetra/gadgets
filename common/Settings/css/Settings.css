@@ -1,0 +1,144 @@
+html, body, form, ol, li {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #333;
+}
+#wrapper {
+    height: 100%;
+    overflow: auto;
+}
+/* Form */
+form ol {
+    float: left;
+}
+form ol li {
+    clear: left;
+    float: left;
+    list-style: none;
+    line-height: 1.5625em;
+}
+form ol.formatting > li:first-of-type {
+    margin-top: 10px;	
+}
+form ol li ol.drillDown li:last-of-type {
+    clear: left;
+    float: left;	
+}
+form ol li label {
+    width: 200px;
+    font-size: 13px;
+}
+form ol li label.right {
+    clear: none;
+    width: 60%;
+}
+form ol li input,
+form ol li > span,
+form ol li div.radio label {
+    margin-right: 6px;
+}
+form ol li label,
+form ol li select,
+form ol li input,
+form ol li span,
+form ol li div {
+    float: left;
+}
+/* Radio buttons */
+form ol li div.radio {
+    clear: left;
+}
+form ol li div.radio img {
+    float: left;
+}
+form ol li div.radio label {
+   width: auto;
+}
+form ol li .colorPicker,
+form ol li .fontSelector {    
+    background-repeat: no-repeat;
+    background-position: 0 3px;
+    cursor: pointer;
+    height: 25px;
+    width: 16px;
+}
+form ol li .colorPicker {
+    background-image: url(https://s3.amazonaws.com/Common-Production/Settings/images/color.png);
+}
+form ol li .fontSelector {
+    background-image: url(https://s3.amazonaws.com/Common-Production/Settings/images/font.png);
+}
+a:link, a:visited, a:hover, a:active {
+    color: #0A5DC3;
+    text-decoration: none;
+}
+/* Classes */
+.long {
+    width: 360px;
+}
+.medium {
+    width: 250px;
+}
+.short {
+    width: 100px;
+}
+label.multiline {
+    line-height: 1.25em;
+}
+.drillDown {
+    margin-left: 1em;	
+}
+.errors {
+    background: #FAD3C4;
+    border: 1px solid #A75B4E;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    display: none;
+    margin: 0px 0px 15px 0px;
+    padding: 8px 8px;
+}
+
+/* Tooltips */
+.tooltip
+{
+    position: relative;
+    cursor: help;
+    display: inline-block;
+    text-decoration: none;
+    color: #222;
+    outline: none;
+}
+.tooltip span
+{
+    visibility: hidden;
+    position: absolute;
+    z-index: 999;
+    width: 300px;
+    padding: 5px;
+    margin-left: 5px;
+    border: 2px solid #ccc;
+    opacity: .9;
+    background-color: #ddd;
+    background-image: -webkit-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+    background-image: -moz-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+    background-image: -ms-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+    background-image: -o-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+    background-image: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
+    box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
+    text-shadow: 0 1px 0 rgba(255,255,255,.4);
+}
+.tooltip:hover span
+{
+    visibility: visible;
+}
+a.tooltip:link, a.tooltip:visited, a.tooltip:hover, a.tooltip:active {
+    color: #333;
+}

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+        <![CDATA[
+        #outer {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #info {
+            padding-bottom: 10px;
+        }
+        #days {
+            overflow: hidden;	/* Expand to contain floated image. */
+            height: 75%;
+        }
+        .currentIcon {
+            float: left;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .wrapper {
+            display: table;
+            height: 100%;
+            padding: 10px;
+        }
+        .wrapper > div {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        ]]>
+    </Style>
+    <Layout>
+        <![CDATA[
+        <div id="outer">
+            <div id="info">
+                <span id="city" class="address_font-style"></span><br />
+                <div id="humidityAndWind">
+                    <span id="humidity" class="other_font-style"></span>
+                    <span>&#149;</span>
+                    <span id="wind" class="other_font-style"></span>
+                </div>
+            </div>
+            <div id="days">
+                <img src="" class="currentIcon" />
+                <div class="wrapper">
+                    <div>
+                        <span class="temp_font-style currentTemp"></span> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        ]]>
+    </Layout>
+</Template>

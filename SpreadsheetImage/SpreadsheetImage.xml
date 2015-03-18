@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Rise Spreadsheet Image Gadget" height="400" title_url="http://www.risevision.com/help/gadgets/gadget-help-files/rise-vision-image-spreadsheet/">
+	<Require feature="rpc" />
+	<Optional feature="rise-api">
+	    <Param name="reports_ready" />
+	</Optional>
+    </ModulePrefs>
+    <UserPref name="id" display_name="ID" default_value="" datatype="hidden" />	
+    <UserPref name="url" display_name="Data Source URL" required="true"/>
+    <UserPref name="imageCount" display_name="Images Per Row" default_value="4" datatype="enum">
+	<EnumValue value="1" display_value="1"/>
+	<EnumValue value="2" display_value="2"/>
+	<EnumValue value="3" display_value="3"/>
+	<EnumValue value="4" display_value="4"/>
+	<EnumValue value="5" display_value="5"/>
+	<EnumValue value="6" display_value="6"/>
+	<EnumValue value="7" display_value="7"/>
+	<EnumValue value="8" display_value="8"/>
+	<EnumValue value="9" display_value="9"/>
+	<EnumValue value="10" display_value="10"/>
+    </UserPref>
+    <UserPref name="imageMargin" display_name="Space Between Images (pixels)" default_value="5" datatype="string" />
+    <UserPref name="imageBgColor" display_name="Image Background Color" datatype="string" default_value="#FFFFFF" />
+    <UserPref name="descriptionBgColor" display_name="Description Background Color" datatype="string" default_value="#FFFFFF" />
+    <UserPref name="backgroundColor" display_name="Background Color" datatype="string" default_value="#000000" />
+    <UserPref name="borderColor" display_name="Border Color" datatype="string" default_value="#000000" />
+    <UserPref name="showCaption" display_name="Show Caption" datatype="bool" default_value="true" />
+    <UserPref name="caption_font-style" display_name="Caption Font" datatype="string" default_value=".caption_font-style{font-family:Verdana, Verdana, Geneva, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:14px;}" />
+	<UserPref name="showDescription" display_name="Show Description" datatype="bool" default_value="true" />
+    <UserPref name="description_font-style" display_name="Description Font" datatype="string" default_value=".description_font-style{font-family:Verdana, Verdana, Geneva, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:12px;}" />
+	<UserPref name="scrollbarThickness" display_name="Scrollbar Thickness (pixels)" default_value="10" datatype="string" />
+    <UserPref name="scrollbarColor" display_name="Scrollbar Color" default_value="#85E3F9" datatype="string" />
+    <UserPref name="interval" display_name="Data Refresh Interval (minutes)" default_value="300" datatype="enum" required="false">
+        <EnumValue value="0" display_value="Do not refresh"/>
+        <EnumValue value="60" display_value="1"/>
+        <EnumValue value="300" display_value="5"/>
+        <EnumValue value="1800" display_value="30"/>
+        <EnumValue value="3600" display_value="60"/>
+    </UserPref>
+    <UserPref name="rsH" display_name="Container Height" default_value="100%" datatype="hidden" />
+    <UserPref name="rsW" display_name="Container Width" default_value="100%" datatype="hidden" />
+    <Content type="html">
+	<![CDATA[
+	<style type="text/css">
+	    body {
+		background: transparent;
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+	    }
+	    
+	    #container {
+		width: __UP_rsW__px;
+		height: __UP_rsH__px;
+		position: absolute;
+		outline: none;
+		visibility: hidden;
+	    }
+
+	    .dissolve {
+			position: relative;
+			float: left;
+			display: block;
+			cursor: pointer;
+			background-color: __UP_imageBgColor__;
+			-webkit-background-size: contain;
+			-webkit-transition: -webkit-transform 1s ease-in-out, opacity 0.4s linear, top 1s linear, left 1s linear;
+			-webkit-perspective: 800;
+			-moz-border-radius: 10px;
+			-webkit-border-radius: 10px;
+			border-radius: 10px;
+		}
+	    
+	    .dissolve > div {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		-webkit-transition: opacity 1s ease-in-out;
+		-moz-transition: opacity 1s ease-in-out;
+		-o-transition: opacity 1s ease-in-out;
+		transition: opacity 1s ease-in-out;
+	    }
+	    
+	    .info {
+		background-color: __UP_descriptionBgColor__;
+		border: solid 1px __UP_borderColor__;
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		border-radius: 10px;
+		-moz-box-sizing: border-box;
+		-ms-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+	    }
+	    
+	    .dissolve > div:first-child {
+		text-align: center;
+		height: 100%;
+	    }
+	    
+	    .logo img {	
+		position: relative;
+		top: 50%;
+	    }
+	    
+	    .transparent {
+		opacity: 0;
+	    }
+	    
+	    .opaque {
+		opacity: 1;
+	    }
+	    
+	    .captionContainer {
+		position: absolute;
+		width: 100%;
+		z-index: 2;
+		pointer-events:none;
+	    }
+	    
+	    .captionFront {
+		padding: 0 5px;
+		margin-top: 0;
+		margin-bottom: 0;
+	    }
+	    
+	    .captionBack {
+		display: table-cell;
+		vertical-align: middle;
+	    }
+	    
+	    .scroll {
+		margin: 0px;
+	    }
+	    
+	    .bottom {
+		position: relative;
+		float: left;
+		width: 1px;
+	    }
+	    
+	    .thumbnail {
+		width: auto;
+		float: left;
+		margin: 0 10px 0 0;
+	    }
+	    
+	    .header {
+		margin: 10px;
+	    }
+	    
+	    .description {
+		padding: 0px 10px;
+		z-index: 2;
+		pointer-events:none;
+	    }
+	    
+	    .qrCode {
+		margin-right: 10px;
+		margin-bottom: 5px;
+		float: right;
+	    }
+	    
+	    .background {
+		opacity: 0.5;
+		pointer-events: auto;
+	    }
+
+	    .closeup {
+		z-index: 5;
+		-webkit-transform: scale3d(1.5, 1.5, 1.5) translateX(0px) translateY(0px) translateZ(1000px);
+	    }
+	    
+	    /* Scrolling */
+	    .customScrollBox {
+		position: relative;
+		height: 100%;
+		overflow: hidden;
+	    }
+	    
+	    .customScrollBox .container {
+		position: relative;
+		float: left;    
+		top: 0;
+	    }
+	    
+	    .customScrollBox .content {
+		overflow: hidden;
+		clear: both;
+	    }
+	    
+	    .dragger_wrapper {
+		position: absolute;
+		top: 0px;
+		right: 0px;
+	    }
+
+	    .dragger_container {	/* Scrollbar line */
+		position: relative;
+		float: left;
+		border-left: 1px solid;
+		cursor: pointer;
+		width: 0px;
+	    }
+	    .dragger {	/* Scroll handle */
+		position: absolute; 
+		overflow: hidden; 
+		cursor: pointer; 
+	    }
+	    .dragger_pressed {
+		cursor: s-resize;
+	    }
+		
+	    __UP_caption_font-style__
+	    __UP_description_font-style__
+		
+	</style>
+    
+	<div id="container">
+	    <div class="customScrollBox">
+		<div class="container">
+		    <div class="content">
+		    </div>
+		</div>
+		<div class="dragger_wrapper">
+		    <div class="dragger_container">
+			<div class="dragger"></div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+    
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="http://www.risedisplaycreative.com/case-vi/jquery.idle-timer.js"></script>
+	<script type="text/javascript" src="http://c624744.r44.cf2.rackcdn.com/SpreadsheetImage.js"></script>
+	<script type="text/javascript" src="http://c499672.r72.cf2.rackcdn.com/common/GoogleSpreadsheet.js"></script>
+	<script type="text/javascript" src="http://c499672.r72.cf2.rackcdn.com/common/RiseGadgets.js"></script>
+	<script type="text/javascript" src="http://c499672.r72.cf2.rackcdn.com/common/BrowserDetect.js"></script>
+	<script type="text/javascript" src="http://c499672.r72.cf2.rackcdn.com/common/scroll/jquery.mCustomScrollbar.js"></script>
+	<script type="text/javascript" src="http://c499672.r72.cf2.rackcdn.com/common/scroll/jquery.easing.1.3.js"></script>
+	<script type="text/javascript" src="http://c499672.r72.cf2.rackcdn.com/common/scroll/jquery.mousewheel.js"></script>
+	<script type="text/javascript">
+	    var prefs = new gadgets.Prefs();
+	    
+	    function readyEvent() {
+		gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+	    }
+	    
+	    function showViewer() {
+		var id = prefs.getString("id");
+		var backgroundColor = prefs.getString("backgroundColor");
+		
+		if (id != null && id != "") {
+		    gadgets.rpc.register("rscmd_play_" + id, play);
+		}
+		
+                gadgets.rpc.register("rscmd_setTimer", setTimer);
+		gadgets.rpc.register("rscmd_destroyTimer", destroyTimer);
+		
+		if (backgroundColor !== null && backgroundColor != "") {
+		    $("#container").css("background", backgroundColor);
+		}
+		
+		var preferences = {
+		    url: prefs.getString("url"),
+		    containerWidth: prefs.getInt("rsW"),
+		    boxCount: prefs.getInt("imageCount"),
+		    boxMargin: prefs.getInt("imageMargin"),
+		    scrollbarWidth: prefs.getInt("scrollbarThickness"),
+		    scrollbarColor: prefs.getString("scrollbarColor"),
+		    showCaption: prefs.getBool("showCaption"),
+		    showDescription: prefs.getBool("showDescription"),
+		    interval: prefs.getInt("interval")
+		};
+		
+		window.gallery = new Gallery(preferences);
+		
+		if (!window.isLoaded) {
+		    window.gallery.didShow();
+		}
+	    }
+	    
+	    function play() {
+		$("#container").css("visibility", "visible");
+	    }
+	    
+	    //Set a timer that will expire if there is no user interaction.
+	    function setTimer(interval) {
+                $.idleTimer(interval);
+		$(document).bind("idle.idleTimer", function() {
+		    $.idleTimer("destroy");
+		    //Notify the Presentation that the timer has expired.
+		    gadgets.rpc.call("", "timerExpired", null);
+		});
+            }
+	    
+	    function destroyTimer() {
+		$.idleTimer("destroy");
+	    }
+		
+	    gadgets.util.registerOnLoadHandler(showViewer); 
+	</script>]]>
+    </Content>
+</Module>
+

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Rise Youtube Gadget" height="400" title_url="http://www.risevision.com/help/gadgets/gadget-help-files/rise-vision-youtube/">
+        <!-- "rpc" feature is necessary for communicating with Viewer -->
+        <Require feature="rpc" />
+        <!-- "flash" feature is necessary for embedding Flash -->
+        <Require feature="flash" />
+        <!-- "rise-api" feature with "reports_ready" parameter tells Rise Gadget Server that Rise Background Gadget supports sending "ready" event -->
+        <Optional feature="rise-api">
+                <Param name="reports_ready" />
+        </Optional>
+    </ModulePrefs>
+    <!-- Gadget ID (passed to the gadget by Viewer in runtime). This UserPref must have datatype=hidden to prevent it from appearing in iGoogle property editor -->
+    <UserPref name="id" display_name="ID" datatype="hidden" default_value="" />
+    <!-- Preferences specific to the Rise Background Gadget	-->
+    <UserPref name="videoID" display_name="Video / Playlist ID" default_value="u9JKR-14HBA" required="true" />
+    <UserPref name="volume" display_name="Volume (0-100)" default_value="50" required="true" />
+    <UserPref name="aspectRatio" display_name="Aspect Ratio" default_value="4x3" datatype="enum">
+        <EnumValue value="4x3" display_value="4x3" />
+        <EnumValue value="16x9" display_value="16x9" />
+    </UserPref>
+    <UserPref name="backgroundColor" display_name="Background Color" />
+    <UserPref name="autoHide" display_name="Auto Hide Controls?" datatype="bool" />
+    <UserPref name="autoPlay" display_name="Auto Play?" default_value="true" datatype="bool" />
+    <UserPref name="rsH" display_name="Container Height" datatype="hidden" />
+    <UserPref name="rsW" display_name="Container Width" datatype="hidden" />
+    <Content type="html">
+        <![CDATA[
+        <style type="text/css">
+            body {
+                background-color: transparent;
+            }
+        </style>
+    
+        <style type="text/css" media="screen"> 
+            object:hover { 
+                border: 0px solid; 
+            }  
+        </style>
+
+        <div id="ytapiplayer">
+            You need Flash player 8+ and JavaScript enabled to view this video.
+        </div>
+
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+
+        <script type="text/javascript">
+            var prefs = new gadgets.Prefs();
+            var autoPlay = prefs.getBool("autoPlay");
+            var loopCount = -1; //Loop indefinitely.
+            var index = 0;
+            var isLoading = true;
+            var isVideo = false;
+            var checkForUpdates = false;
+            var videos = null;
+            var updateInterval = 300000;	//5 minutes
+            var updateCheckFailedTimer = null;
+            var updateCheckFailedInterval = 5000;   //5 seconds
+            var ytplayer, videoID, script, width, height;
+            
+            //Initialize the gadget.
+            function showViewer() {
+                var id = prefs.getString("id");						
+                var backgroundColor = prefs.getString("backgroundColor");
+                                
+                if (id != null && id != "") {
+                    gadgets.rpc.register("rscmd_play_" + id, play);
+                    gadgets.rpc.register("rscmd_pause_" + id, pause);
+                    gadgets.rpc.register("rscmd_stop_" + id, pause);
+                    gadgets.rpc.register("rscmd_playVideo", playVideo);
+                }
+                
+                if (backgroundColor !== null && backgroundColor != "") {
+                    document.body.style.background = backgroundColor;
+                }
+                                        
+                //Check if this is a single video by calling the Youtube Data API.
+                videoID = prefs.getString("videoID");
+                script = document.createElement("script");
+                script.src = "http://gdata.youtube.com/feeds/api/videos/" + videoID + "?prettyprint=true&v=2&alt=jsonc&callback=handleVideoSearch&" + Math.ceil(Math.random() * 100);
+                script.type = "text/javascript";
+                document.getElementsByTagName("head")[0].appendChild(script);			
+            }
+            
+            //This is the callback function for the Youtube Video Search.
+            function handleVideoSearch(json) {
+                clearTimeout(updateCheckFailedTimer);
+                checkForUpdates = false;
+                
+                //Not a video. Maybe it's a playlist.
+                if (json.error) {
+                    script = document.createElement("script");
+                    script.src = "http://gdata.youtube.com/feeds/api/playlists/" + videoID + "?prettyprint=true&v=2&alt=jsonc&callback=handlePlaylistSearch&format=5&" + Math.ceil(Math.random() * 100);
+                    script.type = "text/javascript";
+                    document.getElementsByTagName("head")[0].appendChild(script);	
+                }
+                //This is a video.
+                else {			
+                    isVideo = true;
+                    videos = new Array();
+                    videos[0] = videoID;
+                    setTimeout("checkForUpdatesTimer()", updateInterval);
+                    
+                    //SWF for video only needs to be embedded once.
+                    if (isLoading)
+                        embedPlayer("http://www.youtube.com/v/" + videos[0]);
+                    else {
+                        doneEvent();
+                    }
+                }
+            }
+            
+            //This is the callback function for the Youtube Playlist Contents Search.
+            function handlePlaylistSearch(json) {
+                var items, newVideos;
+                
+                clearTimeout(updateCheckFailedTimer);
+                
+                //Check if an error was returned by the feed.
+                if (json.error) {
+                    doneEvent();	//Video or playlist could not be found.
+                }
+                else {
+                    isVideo = false;
+                    items = json.data.items;
+                    
+                    //When checking for updates, determine if any changes were made to the playlist.
+                    if (checkForUpdates) {		
+                        checkForUpdates = false;
+                        newVideos = new Array();
+                        
+                        //Store all the videoIDs.
+                        for (var i = 0; i < items.length; i++)
+                        {
+                            newVideos[i] = items[i].video.id;
+                        }
+                                                                
+                        //Videos were added or removed or had their privacy settings changed.											
+                        if (newVideos.length != videos.length) 				
+                            videos = newVideos;
+                        //Check if the videoIDs have changed.
+                        else {	
+                            for (var j = 0; j < newVideos.length; j++) {
+                                if (newVideos[j] != videos[j]) {
+                                    videos = newVideos;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        playNextVideo();
+                    }				
+                    else {	//This is only called once.
+                        videos = new Array();
+                                                
+                        //Store all the videoIDs.
+                        for (var i = 0; i < items.length; i++)
+                        {
+                            videos[i] = items[i].video.id;
+                        }
+                        
+                        if (videos.length > 0)					
+                            embedPlayer("http://www.youtube.com/v/" + videos[index]);				
+                    }				
+                    
+                    setTimeout("checkForUpdatesTimer()", updateInterval);
+                }			
+            }
+            
+            function embedPlayer(url) {
+                var aspectRatio = prefs.getString("aspectRatio");
+                var newHeight;
+                
+                width = prefs.getString("rsW");
+                height = prefs.getString("rsH");		
+                
+                //Calculate player size based on aspect ratio.
+                if (aspectRatio == "16x9") {
+                    newHeight = (width / 16) * 9;
+                }
+                else if (aspectRatio =="4x3") {
+                    newHeight = (width / 4) * 3;
+                }
+                
+                //Resize if there is enough room in the placeholder.
+                if (newHeight < height)
+                    height = newHeight;
+                                
+                var flashvars = {};
+                
+                if (prefs.getBool("autoHide"))
+                    flashvars.autohide = "1";	//Autohide playback controls.
+                        
+                var params = { allowScriptAccess: "always" };
+
+                //Don't set wmode parameter for Firefox as there is a bug in FF that will cause the Youtube video to not embed.
+                if (navigator.userAgent.indexOf("Firefox") == -1) {
+                    params.wmode = "opaque";
+                }
+                    
+                var atts = { id: "myytplayer" };
+                swfobject.embedSWF(url + "?version=3&enablejsapi=1&f=videos&app=youtube_gdata&playerapiid=ytplayer&rel=0", "ytapiplayer", width, height, "8", null, flashvars, params, atts);
+            }
+              
+            //This function is called when the player is fully loaded and the API is ready to receive calls.
+            function onYouTubePlayerReady(playerId) {;
+                ytplayer = document.getElementById("myytplayer");
+                var volume = prefs.getString("volume");
+
+                if (ytplayer) {
+                    ytplayer.addEventListener("onStateChange", "ytplayer_statechange");
+                    ytplayer.addEventListener("onError", "ytplayer_error");
+                    ytplayer.setVolume(volume);
+                    
+                    if (isLoading) {
+                        readyEvent();
+                        isLoading = false;
+                    }
+                    else {
+                        ytplayer.playVideo();
+                    }
+                }						
+            }
+            
+            //This event fires when the player's state changes.
+            function ytplayer_statechange(state) {
+                //Current video has ended.
+                if (state == 0) {					
+                    //Check if changes have been made to the video or playlist.
+                    if (checkForUpdates) {
+                        if (isVideo) {
+                            script = document.createElement("script");
+                            script.src = "http://gdata.youtube.com/feeds/api/videos/" + videoID + "?prettyprint=true&v=2&alt=jsonc&callback=handleVideoSearch&" + Math.ceil(Math.random() * 100);
+                            script.type = "text/javascript";
+                            
+                            //Start a timer in case there is a problem checking for updates.
+                            updateCheckFailedTimer = setTimeout("updateCheckFailed()", updateCheckFailedInterval);
+                            document.getElementsByTagName("head")[0].appendChild(script);
+                        }
+                        else {
+                            script = document.createElement("script");
+                            script.src = "http://gdata.youtube.com/feeds/api/playlists/" + videoID + "?prettyprint=true&v=2&alt=jsonc&callback=handlePlaylistSearch&format=5&" + Math.ceil(Math.random() * 100);
+                            script.type = "text/javascript";
+                            
+                            //Start a timer in case there is a problem checking for updates.
+                            updateCheckFailedTimer = setTimeout("updateCheckFailed()", updateCheckFailedInterval);
+                            document.getElementsByTagName("head")[0].appendChild(script);					
+                        }
+                    }
+                    else {					
+                        if (isVideo) {
+                            doneEvent();
+                        }
+                        else {
+                            playNextVideo();
+                        }
+                    }
+                }
+                //Current video is playing.
+                else if (state == 1) {
+                    //Set autoPlay to true if the video is playing. This could happen when the video is not set to Auto Play, but then the user manually clicks play.
+                    //Need this so the video will loop if necessary.
+                    autoPlay = true;
+                }
+            }
+            
+            //Play the next video in the playlist.
+            function playNextVideo() {
+                index++;
+                        
+                //We've reached the last video in the playlist.
+                if (index >= videos.length) {
+                    index = 0;	//Start back at first video.
+                    doneEvent();
+                }
+                else {	//Play next video.	
+                    if (ytplayer) {
+                        ytplayer.loadVideoById(videos[index]);
+                    }
+                }
+            }
+                            
+            function checkForUpdatesTimer() {
+                checkForUpdates = true;
+            }
+            
+            //This function will be called if checking for updates to Youtube videos and playlists fails, for example, when there is no Internet connection.
+            //In that case, continue playing the same video or playlist.
+            function updateCheckFailed() {
+                if (isVideo) {
+                    doneEvent();
+                }
+                else
+                    playNextVideo();
+            }
+            
+            function playVideo(count) {
+                loopCount = count;
+                autoPlay = true;
+                play();
+            }
+            
+            //Viewer called this.
+            function play() {
+                if (ytplayer) {
+                    if (autoPlay) {
+                        if (loopCount == -1) {
+                            startVideo();
+                        }
+                        else {
+                            if (loopCount > 0) {
+                                loopCount--;
+                                startVideo();
+                            }
+                        }
+                    }
+                }
+            }
+            
+            function startVideo() {
+                if (isVideo) {
+                    ytplayer.playVideo();
+                }
+                else
+                    ytplayer.loadVideoById(videos[index]);
+            }
+            
+            function pause() {
+                if (ytplayer) {
+                    ytplayer.pauseVideo();
+                }
+            }
+            
+            function ytplayer_error(error)
+            {
+                // 100 => video not found, removed or marked private
+                // 101 => requested video cannot be embedded
+                // 150 => requested video cannot be embedded
+                if (error)
+                {
+                    //Video can't be played.
+                    if (isVideo)
+                        doneEvent();					
+                    else	//Move to next video in playlist.
+                        playNextVideo();
+                }
+            }
+            
+            // sends "READY" event to the Viewer
+            function readyEvent() {
+                gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+            }
+            
+            // sends "DONE" event to the Viewer
+            function doneEvent() {
+                gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+            }
+            
+            gadgets.util.registerOnLoadHandler(showViewer);
+        </script>]]>
+</Content>
+</Module>

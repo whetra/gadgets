@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Rise RSS List Gadget" height="400" title_url="http://wp.me/P1cnKK-Kt">
+	<Require feature="rpc" />
+	<Optional feature="rise-api">
+	    <Param name="reports_ready" />
+	</Optional>
+    </ModulePrefs>
+    <UserPref name="id" display_name="ID" default_value="" datatype="hidden" />	
+    <UserPref name="murl" display_name="RSS URL" required="true" default_value="http://feeds.feedblitz.com/RiseVision" datatype="string" />
+    <UserPref name="delay" display_name="Scroll Hold Duration (seconds)" datatype="string" required="true" default_value="10" />
+    <UserPref name="interactivityTimeout" display_name="Scroll Resumes (seconds)" datatype="string" default_value="5" />
+    <UserPref name="spacing" display_name="Spacing (pixels)" datatype="string" default_value="25" />
+    <UserPref name="totalItems" display_name="Total Items Count" default_value="10" datatype="string" />
+    <UserPref name="scrollBy" display_name="Scroll By" datatype="enum" default_value="continuous">
+	<EnumValue value="item" display_value="Row" />
+	<EnumValue value="page" display_value="Page" />
+	<EnumValue value="continuous" display_value="Continuous" />
+    </UserPref>
+    <UserPref name="scrollDirection" display_name="Scroll Direction" default_value="down" datatype="enum">
+	<EnumValue value="none" display_value="None"/>
+	<EnumValue value="up" display_value="Up"/>
+	<EnumValue value="down" display_value="Down"/>
+	<EnumValue value="rtl" display_value="Left"/>
+	<EnumValue value="ltr" display_value="Right"/>	
+    </UserPref>
+    <UserPref name="backgroundColor" display_name="Background Color" datatype="string" />
+    <UserPref name="showTitle" display_name="Show Title" datatype="bool" default_value="true" />
+    <UserPref name="titleLink" display_name="Title as Link" datatype="bool" default_value="false" />
+    <UserPref name="title_font-style" display_name="Title Font" datatype="string" default_value=".title_font-style{font-family:Verdana, Verdana, Geneva, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:24px;}" required="true" />
+    <UserPref name="snippet_font-style" display_name="Snippet Font" datatype="string" default_value=".snippet_font-style{font-family:Verdana, Verdana, Geneva, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:16px;}" required="true" />
+    <UserPref name="showAuthor" display_name="Show Author and Date" datatype="enum" default_value="none">
+	<EnumValue value="none" display_value="Do not show"/>
+	<EnumValue value="headerRight" display_value="Header Right Aligned"/>
+	<EnumValue value="headerLeft" display_value="Header Left Aligned"/>
+	<EnumValue value="footerRight" display_value="Footer Right Aligned"/>
+	<EnumValue value="footerLeft" display_value="Footer Left Aligned"/>
+    </UserPref>
+    <UserPref name="author_font-style" display_name="Author and Date Font" datatype="string" default_value=".author_font-style{font-family:Verdana, Verdana, Geneva, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:12px;}" />
+    <UserPref name="rsH" display_name="Container Height" default_value="100%" datatype="hidden" />
+    <UserPref name="rsW" display_name="Container Width" default_value="100%" datatype="hidden" />
+    <Content type="html">
+	<![CDATA[
+	<style type="text/css">
+	    body {
+		background: transparent;
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+	    }
+		
+	    .carousel {
+		width: __UP_rsW__px;
+		height: __UP_rsH__px;
+	    }
+	    
+	    ul {
+		list-style-type: none;
+		margin: 0px;
+		padding: 0px 5px;
+	    }
+	    
+	    li {
+		border-bottom: 1px solid gray;
+	    }
+	    
+	    .empty li {
+		border: none;
+	    }
+	    
+	    .title {
+		text-decoration: none;
+		padding-bottom: 5px;
+	    }
+	    
+	    a.title {
+		text-decoration: none;
+	    }
+	    
+	    .authorRight {
+		text-align: right;
+	    }
+	    
+	    .snippet {
+		padding-bottom: 5px;
+	    }
+		
+	    .authorLeft {
+		text-align: left;
+	    }
+	    
+	    __UP_title_font-style__
+	    __UP_snippet_font-style__
+	    __UP_author_font-style__
+	</style>
+    
+	<div class="carousel">
+	    <ul class="page">
+	    </ul>
+	</div>
+    
+	<div class="title_font-style" style="visibility: hidden; position:absolute;">Trigger custom font download</div>
+	<div class="snippet_font-style" style="visibility: hidden; position:absolute;">Trigger custom font download</div>
+	<div class="author_font-style" style="visibility: hidden; position:absolute;">Trigger custom font download</div>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="http://www.google.com/jsapi"></script>
+	<script src="http://datejs.googlecode.com/svn/trunk/build/date.js"></script>
+    
+	<script src="http://9f8bd5014b970769c55f-6711414115c6e178c6b93552aded8da6.r34.cf2.rackcdn.com/common/RiseGadgets.js"></script>
+	<script src="http://9f8bd5014b970769c55f-6711414115c6e178c6b93552aded8da6.r34.cf2.rackcdn.com/common/InfiniteScroll/InfiniteScroll.js"></script>
+	<script src="http://9f8bd5014b970769c55f-6711414115c6e178c6b93552aded8da6.r34.cf2.rackcdn.com/common/HorizontalScroll/Item.js"></script>
+	<script src="http://9f8bd5014b970769c55f-6711414115c6e178c6b93552aded8da6.r34.cf2.rackcdn.com/common/HorizontalScroll/Scroller.js"></script>
+	<script src="http://9f8bd5014b970769c55f-6711414115c6e178c6b93552aded8da6.r34.cf2.rackcdn.com/common/HorizontalScroll/HorizontalScroll.js"></script>
+	<script src="http://1bd32b99ac6f804b055b-45184a414fd822208024029da2d0d29b.r31.cf2.rackcdn.com/RSSList.js"></script>
+    
+	<script type="text/javascript">
+	    var prefs = new gadgets.Prefs(),
+		rssList = null;
+	    
+	    google.load("feeds", "1");
+	    
+	    function initialize() {
+		var id = prefs.getString("id"),
+		    backgroundColor = prefs.getString("backgroundColor");
+		
+		if (id !== null && id != "") {
+		    gadgets.rpc.register("rscmd_play_" + id, play);
+		    gadgets.rpc.register("rscmd_pause_" + id, pause);
+		    gadgets.rpc.register("rscmd_stop_" + id, stop);
+		}
+				
+		if (backgroundColor !== null && backgroundColor != "") {
+		    document.body.style.background = backgroundColor;
+		}
+		
+		google.setOnLoadCallback(function() {
+		    rssList = new RSSList();	
+		    rssList.loadFeed();
+		});
+	    }	
+	    
+	    function play() {
+		rssList.play();
+	    }
+	    
+	    function pause() {
+		rssList.pause();
+	    }
+	    
+	    function stop() {
+		rssList.pause();
+	    }
+	    
+	    function readyEvent() {
+		gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, false, true, true, true);
+	    }
+	
+	    function doneEvent() {
+		gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+	    }
+		    
+	    gadgets.util.registerOnLoadHandler(initialize); 		
+	</script>]]>
+    </Content>
+</Module>

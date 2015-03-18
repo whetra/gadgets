@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="World Clock Gadget" title_url="http://www.risevision.com/help/users/what-are-gadgets/free-gadgets/rise-vision-world-clock/">
+	<Require feature="rpc" />
+	<Optional feature="rise-api">
+	    <Param name="reports_ready" />
+	</Optional>
+    </ModulePrefs>
+    <UserPref name="useLocalTime" />
+    <UserPref name="timeZone" />    
+    <UserPref name="showTitle" /> 
+    <UserPref name="title" />
+    <UserPref name="placement" />
+    <UserPref name="padding" />
+    <UserPref name="horizontalAlign" />
+    <UserPref name="verticalAlign" />
+    <UserPref name="clockType" />
+    <UserPref name="frameColor" />    
+    <UserPref name="faceColor" />
+    <UserPref name="handColor" />
+    <UserPref name="frameWidth" />
+    <UserPref name="hourTickWidth" />
+    <UserPref name="minuteTickWidth" />
+    <UserPref name="handWidth" />
+    <UserPref name="showSecondHand" />
+    <UserPref name="secondHandColor" />
+    <UserPref name="secondHandWidth" />
+    <UserPref name="bgColor" />
+    <UserPref name="id" />
+    <UserPref name="rsW" />
+    <UserPref name="rsH" />
+    <Content type="html" view="editor">
+        <![CDATA[
+	    <style>
+		#settings {
+		    display: none;
+		}
+	    </style>
+	    <div id="wrapper">
+		<div class="errors"></div>
+		<form id="settings" name="settings">
+		    <ol>
+			<li>
+			    <label for="useLocalTime">
+				<a href="#" class="tooltip">Local Time:<span>Show local Display time or pick the Time Zone required</span></a>
+			    </label>
+			    <input id="useLocalTime" name="useLocalTime" type="checkbox" value="useLocalTime" checked="checked" />
+			</li>
+			<li class="timeZone drillDown">
+			    <ol>
+				<li>
+				    <label for="timeZone">Time Zone:</label>
+				    <select name="timeZone" id="timeZone" class="long">
+					<option value="Pacific/Samoa">(GMT -11:00) Midway Island, Samoa</option>
+					<option value="US/Hawaii">(GMT -10:00) Hawaii</option>
+					<option value="US/Alaska">(GMT -9:00) Alaska</option>
+					<option value="Canada/Pacific">(GMT -8:00) Pacific Time (US &amp; Canada)</option>
+					<option value="Canada/Mountain">(GMT -7:00) Mountain Time (US &amp; Canada)</option>
+					<option value="Canada/Central">(GMT -6:00) Central Time (US &amp; Canada)</option>
+					<option value="Canada/Eastern">(GMT -5:00) Eastern Time (US &amp; Canada)</option>
+					<option value="Canada/Atlantic">(GMT -4:00) Atlantic Time (Canada)</option>
+					<option value="Canada/Newfoundland">(GMT -3:30) Newfoundland Time (Canada)</option>
+					<option value="America/Argentina/Buenos_Aires">(GMT -3:00) Buenos Aires, Georgetown</option>
+					<option value="Atlantic/South_Georgia">(GMT -2:00) Mid-Atlantic</option>
+					<option value="Atlantic/Cape_Verde">(GMT -1:00 hour) Cape Verde Is.</option>
+					<option value="Europe/London">(GMT) Dublin, Edinburgh, Lisbon, London</option>
+					<option value="Europe/Amsterdam">(GMT +1:00) Amsterdam, Berlin, Bern, Rome, Paris, Stockholm, Vienna</option>
+					<option value="Europe/Athens">(GMT +2:00) Athens, Bucharest, Istanbul, Minsk</option>
+					<option value="Europe/Moscow">(GMT +3:00) Moscow, St. Petersburg, Volgograd</option>
+					<option value="Asia/Tehran">(GMT +3:30) Tehran</option>
+					<option value="Asia/Muscat">(GMT +4:00) Abu Dhabi, Muscat</option>
+					<option value="Asia/Kabul">(GMT +4:30) Kabul</option>
+					<option value="Asia/Karachi">(GMT +5:00) Islamabad, Karachi, Tashkent</option>
+					<option value="Asia/Calcutta">(GMT +5:30) Calcutta, Chennai, Mumbai, New Delhi</option>
+					<option value="Asia/Kathmandu">(GMT +5:45) Kathmandu</option>
+					<option value="Asia/Almaty">(GMT +6:00) Astana, Almaty, Dhaka, Novosibirsk</option>
+					<option value="Asia/Rangoon">(GMT +6:30) Rangoon (Yangon, Burma)</option>
+					<option value="Asia/Bangkok">(GMT +7:00) Bangkok, Hanoi, Jakarta</option>
+					<option value="Asia/Hong_Kong">(GMT +8:00) Beijing, Chongqing, Hong Kong, Urumqi</option>
+					<option value="Asia/Tokyo">(GMT +9:00) Osaka, Sapporo, Tokyo</option>
+					<option value="Australia/Adelaide">(GMT +9:30) Adelaide, Darwin</option>
+					<option value="Australia/Canberra">(GMT +10:00) Canberra, Melbourne, Sydney, Vladivostok</option>
+					<option value="Asia/Magadan">(GMT +11:00) Magadan, Solomon Is., New Caledonia</option>
+					<option value="Pacific/Auckland">(GMT +12:00) Auckland, Fiji, Kamchatka, Marshall Is.</option>
+					<option value="Pacific/Tongatapu">(GMT +13:00) Nuku'alofa</option>
+				  </select>
+				</li>
+			    </ol>
+			</li>
+			<li>
+			    <label for="showTitle">
+				<a href="#" class="tooltip">Show Title:<span>Give your clock a name</span></a>
+			    </label>
+			    <input id="showTitle" name="showTitle" type="checkbox" value="showTitle" />
+			</li>
+			<li class="title drillDown">
+			    <ol>
+				<li>
+				    <label for="title">Title:</label>
+				    <input id="title" name="title" type="text" class="medium" value="My Clock Name" />
+				</li>
+				<li>
+				    <label for="title_font-style">Font:</label>
+				    <span id="title_font-style" name="title_font-style" data-css=".title_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:20px;}">Arial, 20px, color: rgb(0, 0, 0)</span>
+				    <div class="fontSelector" data-for="title_font-style"></div>
+				</li>
+				<li>
+				    <label for="placement">
+					<a href="#" class="tooltip">Placement:<span>Position of title</span></a>
+				    </label>
+				    <select id="placement" name="placement" class="short">
+					<option value="top">Top</option>
+					<option value="bottom">Bottom</option>
+					<option value="left" selected="selected">Left</option>
+					<option value="right">Right</option>
+				    </select>
+				</li>
+				<li>
+				    <label for="padding">
+					<a href="#" class="tooltip">Padding (pixels):<span>The amount of space between your title and clock</span></a>
+				    </label>
+				    <input id="padding" name="padding" type="text" class="short" value="10" />
+				</li>
+				<li class="horizontalAlign">
+				    <label for="horizontalAlign">Alignment:</label>
+				    <select id="horizontalAlign" name="horizontalAlign" class="short">
+					<option value="left">Left</option>
+					<option value="center" selected="selected">Center</option>
+					<option value="right">Right</option>				
+				    </select>
+				</li>
+				<li class="verticalAlign">
+				    <label for="verticalAlign">Alignment:</label>
+				    <select id="verticalAlign" name="verticalAlign" class="short">
+					<option value="top">Top</option>
+					<option value="middle" selected="selected">Middle</option>
+					<option value="bottom">Bottom</option>					
+				    </select>
+				</li>
+			    </ol>
+			</li>
+			<li>
+			    <label for="clockType">Clock Type:</label>
+			    <input type="radio" name="clockType" value="analog"><span>Analog</span>
+			    <input type="radio" name="clockType" value="digital" checked="checked"><span>Digital</span>
+			</li>
+			<li class="analog drillDown">
+			    <ol>
+				<li>
+				    <label for="frameColor">Frame Color:</label>
+				    <input id="frameColor" name="frameColor" type="text" class="short" value="rgb(0, 0, 0)" />
+				    <div class="colorPicker" data-for="frameColor""></div>
+				</li>
+				<li>
+				    <label for="frameWidth">Frame Width (pixels):</label>
+				    <input id="frameWidth" name="frameWidth" type="text" class="short" value="10" />
+				</li>
+				<li>
+				    <label for="faceColor">Face Color:</label>
+				    <input id="faceColor" name="faceColor" type="text" class="short" value="rgb(255, 255, 255)" />
+				    <div class="colorPicker" data-for="faceColor""></div>
+				</li>
+				<li>
+				    <label for="handColor">Hour/Minute Hand Color:</label>
+				    <input id="handColor" name="handColor" type="text" class="short" value="rgb(0, 0, 0)" />
+				    <div class="colorPicker" data-for="handColor""></div>
+				</li>
+				<li>
+				    <label for="handWidth">Hour/Minute Hand Width (pixels):</label>
+				    <input id="handWidth" name="handWidth" type="text" class="short" value="5" />
+				</li>
+				<li>
+				    <label for="numbers_font-style">Numbers Font:</label>
+				    <span id="numbers_font-style" name="numbers_font-style" data-css=".numbers_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:48px;}">Arial, 48px, color: rgb(0, 0, 0)</span>
+				    <div class="fontSelector" data-for="numbers_font-style"></div>
+				</li>
+				<li>
+				    <label for="hourTickWidth">Hour Tick Width (pixels):</label>
+				    <input id="hourTickWidth" name="hourTickWidth" type="text" class="short" value="5" />
+				</li>
+				<li>
+				    <label for="minuteTickWidth">Minute Tick Width (pixels):</label>
+				    <input id="minuteTickWidth" name="minuteTickWidth" type="text" class="short" value="2" />
+				</li>
+				<li>
+				    <label for="showSecondHand">Show Second Hand:</label>
+				    <input id="showSecondHand" name="showSecondHand" type="checkbox" value="showSecondHand" />
+				</li>
+				<li class="secondHand drillDown">
+				    <ol>
+					<li>
+					    <label for="secondHandColor">Second Hand Color:</label>
+					    <input id="secondHandColor" name="secondHandColor" type="text" class="short" value="rgb(255, 0, 0)" />
+					    <div class="colorPicker" data-for="secondHandColor""></div>
+					</li>
+					<li>
+					    <label for="secondHandWidth">Second Hand Width (pixels):</label>
+					    <input id="secondHandWidth" name="secondHandWidth" type="text" class="short" value="5" />
+					</li>
+				    </ol>
+				</li>
+			    </ol>
+			</li>
+			<li class="digital drillDown">
+			    <ol>
+				<li>
+				    <label for="format">Format:</label>
+				    <select id="format" name="format" class="medium">
+					<option value="12HourSeconds" selected="selected">12-hour clock + seconds</option>
+					<option value="12Hour">12-hour clock</option>
+					<option value="24HourSeconds">24-hour clock + seconds</option>
+					<option value="24Hour">24-hour clock</option>
+				    </select>
+				</li>
+				<li>
+				    <label for="digitalFont">Font:</label>
+				    <select id="digitalFont" name="digitalFont" class="long">
+					<option value="Arial, Arial, Helvetica, sans-serif" selected="selected">Arial, Arial, Helvetica, sans-serif</option>
+					<option value="Arial Black, Arial Black, Gadget, sans-serif">Arial Black, Arial Black, Gadget, sans-serif</option>
+					<option value="Comic Sans MS, Comic Sans MS, cursive">Comic Sans MS, Comic Sans MS, cursive</option>
+					<option value="Courier New, Courier New, Courier, monospace">Courier New, Courier New, Courier, monospace</option>
+					<option value="Georgia, Georgia, serif">Georgia, Georgia, serif</option>
+					<option value="Impact, Impact, Charcoal, sans-serif">Impact, Impact, Charcoal, sans-serif</option>
+					<option value="Lucida Console, Monaco, monospace">Lucida Console, Monaco, monospace</option>
+					<option value="Lucida Sans Unicode, Lucida Grande, sans-serif">Lucida Sans Unicode, Lucida Grande, sans-serif</option>
+					<option value="Palatino Linotype, Book Antiqua, Palatino, serif">Palatino Linotype, Book Antiqua, Palatino, serif</option>
+					<option value="Tahoma, Geneva, sans-serif">Tahoma, Geneva, sans-serif</option>
+					<option value="Times New Roman, Times, serif">Times New Roman, Times, serif</option>
+					<option value="Trebuchet MS, Helvetica, sans-serif">Trebuchet MS, Helvetica, sans-serif</option>
+					<option value="Verdana, Verdana, Geneva, sans-serif">Verdana, Verdana, Geneva, sans-serif</option>
+					<option value="Symbol, Symbol (Symbol, Symbol)">Symbol, Symbol (Symbol, Symbol)</option>
+					<option value="Webdings, Webdings (Webdings, Webdings)">Webdings, Webdings (Webdings, Webdings)</option>
+					<option value="MS Sans Serif, Geneva, sans-serif">MS Sans Serif, Geneva, sans-serif</option>
+					<option value="MS Serif, New York, serif">MS Serif, New York, serif</option>
+				    </select>
+				</li>
+				<li>
+				    <label for="digitalColor">Color:</label>
+				    <input id="digitalColor" name="digitalColor" type="text" class="short" value="rgb(0, 0, 0)" />
+				    <div class="colorPicker" data-for="digitalColor""></div>
+				</li>
+			    </ol>
+			</li>
+			<li>
+			    <label for="bgColor">Background Color:</label>
+			    <input id="bgColor" name="bgColor" type="text" class="short" />
+			    <div class="colorPicker" data-for="bgColor""></div>
+			</li>
+		    </ol>
+		</form>
+	    </div>
+    
+	<link rel="stylesheet" href="https://s3.amazonaws.com/Common-Production/Settings/css/Settings.css" />
+	    
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Gadget-World-Clock/WorldClock.min.js"></script>
+    
+	<script type="text/javascript">
+	    var clockSettings = null;
+			    
+	    function init() {
+		google.setOnLoadCallback(function() {
+		    $(function() {
+			clockSettings = new RiseVision.WorldClock.Settings();
+			
+			gadgets.rpc.register("rscmd_getSettings", clockSettings.getSettings);
+			gadgets.rpc.register("rscmd_colorPickerCallback", clockSettings.setColor);
+			gadgets.rpc.register("rscmd_fontSelectorCallback", clockSettings.setFont);
+			
+			clockSettings.initSettings();
+		    });
+		});
+	    }
+	    
+	    gadgets.util.registerOnLoadHandler(init); 
+        </script>]]>
+    </Content>
+    <Content type="html">
+	<![CDATA[
+	<style type="text/css">
+	    * {
+		box-sizing: border-box;
+	    }
+	    
+	    body {
+		background: transparent;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-o-user-select: none;
+		user-select: none;
+	    }
+	    
+	    #container {
+		width: 100%;
+		height: 100%;
+		position: relative;
+	    }
+	    
+	    #title {
+		padding: __UP_padding__px;	
+	    }
+	    
+	    #title.top, #title.bottom {
+		width: 100%;
+	    }
+	    
+	    /* Analog */
+	    #title.analog.left {
+		float: left;
+	    }
+	    
+	    #title.analog.right.valigntop {
+		text-align: right;
+	    }
+	    
+	    #title.analog.right.valignmiddle,
+	    #title.analog.right.valignbottom {
+		position: absolute;
+		right: 0;
+	    }
+	    
+	    /* Digital */
+	    #title.digital.left.valigntop {
+		position: absolute;
+	    }
+	    
+	    #title.digital.left.valignmiddle {
+		float: left;
+	    }
+	    
+	    #title.valignbottom {
+		position: absolute;
+		bottom: 0;
+	    }
+	    
+	    #title.digital.right {
+		position: absolute;
+		right: 0;
+	    }
+	    
+	    .halignleft {
+		text-align: left;
+	    }
+	    
+	    .haligncenter {
+		text-align: center;
+	    }
+	    
+	    .halignright {
+		text-align: right;
+	    }
+	    
+	    #analogClock.valign {
+		position: absolute;
+		top: 50%;
+	    }
+	    
+	    .customFont {
+		visibility: hidden;
+		height: 0px;
+	    }
+	</style>
+    
+	<div class="customFont title_font-style">title</div>
+	<div class="customFont numbers_font-style">numbers</div>
+    
+	<div id="container">
+	    <span id="digitalClock"></span>
+	    <canvas id="analogClock"></canvas>
+	</div>
+    
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Gadget-World-Clock/WorldClock.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/TimezoneJS/date.js"></script>
+    
+	<script type="text/javascript">
+	    var prefs = new gadgets.Prefs(),
+		controller = null;
+		
+	    //Issue 1043 - Disable right-click.
+	    window.oncontextmenu = function() {
+		return false;
+	    };
+		
+	    //Add Analytics code.
+	    var _gaq = _gaq || [];
+	    
+	    _gaq.push(['_setAccount', 'UA-41395348-13']);
+	    _gaq.push(['_trackPageview']);
+	  
+	    (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	    })();
+	    
+	    $(document).ready(function() {
+		var id = prefs.getString("id"),
+		    bgColor = prefs.getString("bgColor");
+		    
+		if (bgColor != null && bgColor != "") {
+		    document.body.style.background = bgColor;
+		}
+		
+		gadgets.rpc.register("rscmd_play_" + id, play);
+		gadgets.rpc.register("rscmd_pause_" + id, pause);
+		gadgets.rpc.register("rscmd_stop_" + id, stop);		
+		init();		    	
+	    });
+	    
+	    //Initialize the gadget.		
+	    function init() {
+		var id = prefs.getString("id");
+		
+		controller = new RiseVision.WorldClock.Controller();
+
+		gadgets.rpc.register("rsparam_set_" + id, controller.getAdditionalParams);
+		gadgets.rpc.call("", "rsparam_get", null, id, "additionalParams");	
+	    }
+	    
+	    function play() {
+		controller.play();
+	    }
+	    
+	    function pause() {
+		controller.pause();
+	    }
+	    
+	    function stop() {
+		controller.pause();
+	    }
+	    
+	    function readyEvent() {
+		gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, true, true, true, true);
+	    }
+	
+	    function doneEvent() {
+		gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+	    }			
+	</script>]]>
+    </Content>
+</Module>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+	<![CDATA[
+	* {
+	    -moz-box-sizing: border-box;
+	    box-sizing: border-box;
+	}
+	body {
+	    -moz-user-select: none;
+	    -webkit-user-select: none;
+	    -khtml-user-select: none;
+	    user-select: none;
+	}
+	#scrollContainer {
+	    overflow: hidden;
+	    position: relative;
+	}
+	table {
+	    width: 100%;
+	    border-collapse: collapse;
+	}
+	thead {
+	    text-align: left;
+	}
+	table th a {
+	    text-decoration: none;
+	}
+	.image div {
+	    height: 100%;
+	    background-size: contain;
+	    background-repeat: no-repeat;
+	    background-position: left center;
+	    overflow: auto;
+	}
+	.nowrap {
+	    white-space: nowrap;
+	}
+	.noData {
+	    line-height: 2em;
+	    text-align: center;
+	}
+	
+	/* Sorting */
+	.sorting_asc, .sorting_desc {
+	    -webkit-border-radius: 40px;
+	    -moz-border-radius: 40px;
+	    border-radius: 40px;
+	}
+	.dataTables_scrollHeadInner table thead tr th div.indicator {
+	    display: table;
+	    float: right;
+	}
+	.dataTables_scrollHeadInner table thead tr th div.indicator div {
+	    display: table-row;
+	    font-size: 0.5em;
+	}
+	.dataTables_scrollHeadInner table thead tr th div.arrow {
+	    float: right;
+	    font-size: 0.75em;
+	}
+	]]>
+    </Style>
+    <Layout>
+	<![CDATA[
+	<!-- This custom layout assumes that there are six columns of data in the spreadsheet,
+	     and that there is a URL to an image in Column B (i.e. the second column).
+	     If this does not accurately reflect your particular spreadsheet,
+	     be sure to alter the layout below. -->
+	<table id="directory" class="page">
+	    <tbody>
+		<tr class="listing item data_font-style">
+		    <td class="A"></td>
+		    <td class="B image"></td>
+		    <td class="C"></td>
+		    <td class="D"></td>
+		    <td class="E"></td>
+		    <td class="F"></td>
+		</tr>
+	    </tbody>
+	</table>
+	]]>
+    </Layout>
+</Template>
+

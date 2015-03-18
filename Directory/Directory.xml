@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Rise Vision Directory Gadget" title_url="http://www.risevision.com/help/users/what-are-gadgets/free-gadgets/rise-vision-directory/">
+        <Require feature="rpc" />
+        <Optional feature="rise-api">
+            <Param name="reports_ready" />
+        </Optional>
+    </ModulePrefs>
+    <UserPref name="url" />
+    <UserPref name="docID" />
+    <UserPref name="cells" />
+    <UserPref name="range" />
+    <UserPref name="sheet" />
+    <UserPref name="headerRows" />
+    <UserPref name="refresh" />
+    <UserPref name="imageCol" />
+    <UserPref name="rowColor" />
+    <UserPref name="altRowColor" />
+    <UserPref name="bgColor" />
+    <UserPref name="scrollDirection" />
+    <UserPref name="scrollBy" />
+    <UserPref name="scrollHold" />
+    <UserPref name="scrollSpeed" />
+    <UserPref name="scrollResumes" />    
+    <UserPref name="rowPadding" />    
+    <UserPref name="nav" />
+    <UserPref name="showAll" />
+    <UserPref name="navMargin" />
+    <UserPref name="navColor" />
+    <UserPref name="navBgColor" />
+    <UserPref name="headingColor" />
+    <UserPref name="headingBgColor" />
+    <UserPref name="headingSortColor" />
+    <UserPref name="rowHeight" />
+    <UserPref name="colPadding" />
+    <UserPref name="colCount" />
+    <UserPref name="showCard" />
+    <UserPref name="cardLocation" />
+    <UserPref name="cardWidth" />
+    <UserPref name="cardTimeout" />
+    <UserPref name="cardBorder" />
+    <UserPref name="cardBgColor" />
+    <UserPref name="cardImageAlign" />
+    <UserPref name="cardImageWidth" />
+    <UserPref name="cardImagePadding" />
+    <UserPref name="cardTitle" />
+    <UserPref name="cardTitlePadding" />
+    <UserPref name="cardSubtitle" />
+    <UserPref name="cardSubtitlePadding" />
+    <UserPref name="cardDetail" />
+    <UserPref name="cardDetailPadding" />
+    <UserPref name="cardUseDefault" />
+    <UserPref name="cardLayoutURL" />
+    <UserPref name="useDefault" />
+    <UserPref name="layoutURL" />
+    <UserPref name="id" />
+    <UserPref name="rsW" />
+    <UserPref name="rsH" />
+    <Content type="html" view="editor">
+        <![CDATA[
+	    <style>
+		#settings {
+		    display: none;
+		}
+	    </style>
+	    <div id="wrapper">
+		<div class="errors"></div>
+		<form id="settings" name="settings">
+		    <ol>
+			<li>
+			    <label for="url">
+				<a href="#" class="tooltip">Data URL*:<span>Query data source URL of the spreadsheet that holds the data</span></a>
+			    </label>
+			    <input id="url" name="url" type="text" class="medium" required autofocus />
+			    <a id="googleDrive" href="#" data-for="url"><span>Google Drive&#8482;</span></a>
+			</li>
+			<li class="more drillDown" style="display: none;">
+			    <ol>
+				<li>
+				    <label for="cells">Cells:</label>
+				    <div>
+					<input type="radio" name="cells" value="sheet" checked="checked" />Entire Sheet<br>
+					<input type="radio" name="cells" value="range" />Range
+				    </div>
+				</li>
+				<li id="rangeContainer" style="display: none;">
+				    <label for="range">
+					<a href="#" class="tooltip">Range:<span>Range of cells in the format A1:B10</span></a>
+				    </label>
+				    <input id="range" name="range" type="text" />
+				</li>
+				<li>
+				    <label for="sheet">Worksheet:</label>
+				    <select id="sheet" name="sheet"></select>
+				</li>
+				<li>
+				    <label for="headerRows">
+					<a href="#" class="tooltip">Number of Header Rows:<span>Specify how many rows are header rows. These will be excluded from the data and assigned as column labels in the data table. If set to Auto, the spreadsheet will guess how many rows are header rows. Note that if all your columns are string data, the spreadsheet might have difficulty determining which rows are header rows without this parameter set to something other than Auto.</span></a>
+				    </label>
+				    <select id="headerRows" name="headerRows">
+					<option value="-1">Auto</option>
+					<option value="0" selected="selected">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+				    </select>
+				</li>
+				</ol>
+			</li>
+			<li>
+			    <label for="refresh">
+				<a href="#" class="tooltip">Data Refresh (seconds):<span>How often to check the spreadsheet for new data</span></a>
+			    </label>
+			    <input id="refresh" name="refresh" type="text" class="short" value="10" />
+			</li>
+			<li>
+			    <label for="imageCol">
+				<a href="#" class="tooltip">Image Column:<span>Column of the spreadsheet that contains an image URL, if any (e.g. A or AW)</span></a>
+			    </label>
+			    <input id="imageCol" name="imageCol" type="text" class="short" />
+			</li>
+			<li>
+			    <label for="heading_font-style">Heading Font:</label>
+			    <span id="heading_font-style" name="heading_font-style" data-css=".heading_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:26px;}">Arial, 26px, color: rgb(0, 0, 0)</span>
+			    <div class="fontSelector" data-for="heading_font-style"></div>
+			</li>
+			<li>
+			    <label for="data_font-style">Data Font:</label>
+			    <span id="data_font-style" name="data_font-style" data-css=".data_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:18px;}">Arial, 18px, color: rgb(0, 0, 0)</span>
+			    <div class="fontSelector" data-for="data_font-style"></div>
+			</li>
+			<li>
+			    <label for="rowColor">Row Color:</label>
+			    <input id="rowColor" name="rowColor" type="text" class="short" />
+			    <div class="colorPicker" data-for="rowColor"></div>
+			</li>
+			<li>
+			    <label for="altRowColor">Alternate Row Color:</label>
+			    <input id="altRowColor" name="altRowColor" type="text" class="short" />
+			    <div class="colorPicker" data-for="altRowColor"></div>
+			</li>
+			<li>
+			    <label for="bgColor">Background Color:</label>
+			    <input id="bgColor" name="bgColor" type="text" class="short" />
+			    <div class="colorPicker" data-for="bgColor"></div>
+			</li>
+			<li>
+			    <label for="scrollDirection">
+				<a href="#" class="tooltip">Scroll Direction:<span>Direction in which the Directory should scroll</span></a>
+			    </label>
+			    <select id="scrollDirection" name="scrollDirection" class="short">
+				<option value="none">None</option>
+				<option value="up">Up</option>
+				<option value="down" selected="selected">Down</option>
+			    </select>
+			</li>
+			<li class="scroll drillDown" style="display: none;">
+			    <ol>
+				<li>
+				    <label for="scrollBy">
+					<a href="#" class="tooltip">Scroll By:<span>How to scroll the Directory if not all of it is visible</span></a>
+				    </label>
+				    <select id="scrollBy" name="scrollBy" class="short">
+					<option value="item">Row</option>
+					<option value="page">Page</option>
+					<option value="continuous" selected="selected">Continuous</option>
+				    </select>
+				</li>
+				<li class="scrollHold drillDown" style="display: none;">
+				    <label for="scrollHold">
+					<a href="#" class="tooltip">Scroll Hold (seconds):<span>Number of seconds to pause after each scroll</span></a>
+				    </label>
+				    <input id="scrollHold" name="scrollHold" type="text" class="short" value="10" />
+				</li>
+				<li>
+				    <label for="scrollSpeed">
+					<a href="#" class="tooltip">Scroll Speed:<span>Speed at which to scroll the Directory</span></a>
+				    </label>
+				    <select id="scrollSpeed" name="scrollSpeed" class="short">
+					<option value="slowest">Slowest</option>
+					<option value="slow">Slow</option>
+					<option value="medium" selected="selected">Medium</option>
+					<option value="fast">Fast</option>
+					<option value="fastest">Fastest</option>
+				    </select>
+				</li>
+				<li>
+				    <label for="scrollResumes">
+					<a href="#" class="tooltip">Scroll Resumes (seconds):<span>Number of seconds to pause after scrolling is stopped by a touch</span></a>
+				    </label>
+				    <input id="scrollResumes" name="scrollResumes" type="text" class="short" value="5" />
+				</li>
+			    </ol>
+			</li>
+			<li>
+			    <label for="rowPadding">
+				<a href="#" class="tooltip">Row Padding (pixels):<span>Amount of space between rows</span></a>
+			    </label>
+			    <input id="rowPadding" name="rowPadding" type="text" class="short" value="15" />
+			</li>
+			<li>
+			    <label for="nav">
+				<a href="#" class="tooltip">Navigation:<span>Show alphabetic navigation for the Directory</span></a>
+			    </label>
+			    <select id="nav" name="nav" class="short">
+				<option value="none">None</option>
+				<option value="top" selected="selected">Top</option>
+				<option value="bottom">Bottom</option>
+				<option value="left">Left</option>
+				<option value="right">Right</option>
+			    </select>
+			</li>
+			<li class="nav drillDown" style="display: none;">
+			    <ol>
+				<li>
+				    <label for="showAll">Timeout (seconds):</label>
+				    <input id="showAll" name="showAll" type="text" class="short" />
+				</li>
+				<li>
+				    <label for="nav_font-style">Font:</label>
+				    <span id="nav_font-style" name="nav_font-style" data-css=".nav_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:bold;font-size:26px;}">Arial, 26px, bold, color: rgb(0, 0, 0)</span>
+				    <div class="fontSelector" data-for="nav_font-style"></div>
+				</li>
+				<li>
+				    <label for="navMargin">Margin (pixels):</label>
+				    <input id="navMargin" name="navMargin" type="text" class="short" value="15" />
+				</li>
+				<li>
+				    <label for="navColor">Selected Color:</label>
+				    <input id="navColor" name="navColor" type="text" class="short" value="rgb(204, 204, 204)" />
+				    <div class="colorPicker" data-for="navColor"></div>
+				</li>
+				<li>
+				    <label for="navBgColor">Selected Background Color:</label>
+				    <input id="navBgColor" name="navBgColor" type="text" class="short" />
+				    <div class="colorPicker" data-for="navBgColor"></div>
+				</li>
+			    </ol>
+			</li>
+			<li class="horizontal drillDown" style="display: none;">
+			    <ol>				
+				<li>
+				    <label for="headingColor">Selected Heading Color:</label>
+				    <input id="headingColor" name="headingColor" type="text" class="short" value="rgb(204, 204, 204)" />
+				    <div class="colorPicker" data-for="headingColor"></div>
+				</li>
+				<li>
+				    <label for="headingBgColor" class="multiline">Selected Heading Background Color:</label>
+				    <input id="headingBgColor" name="headingBgColor" type="text" class="short" />
+				    <div class="colorPicker" data-for="headingBgColor"></div>
+				</li>
+				<li>
+				    <label for="headingSortColor">Heading Sort Order Color:</label>
+				    <input id="headingSortColor" name="headingSortColor" type="text" class="short" value="rgb(204, 204, 204)" />
+				    <div class="colorPicker" data-for="headingSortColor"></div>
+				</li>
+				<li>
+				    <label for="rowHeight">
+					<a href="#" class="tooltip">Row Height (pixels):<span>Height of each row</span></a>
+				    </label>
+				    <input id="rowHeight" name="rowHeight" type="text" class="short" value="40" />
+				</li>
+				<li>
+				    <label for="colPadding">
+					<a href="#" class="tooltip">Column Padding (pixels):<span>Amount of space between columns</span></a>
+				    </label>
+				    <input id="colPadding" name="colPadding" type="text" class="short" value="15" />
+				</li>
+				<li>
+				    <label for="colCount">
+					<a href="#" class="tooltip">Number of Columns to Format:<span>Number of columns of the spreadsheet to format</span></a>
+				    </label>
+				    <select id="colCount" name="colCount" class="short">
+					<option value="0" selected="selected">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+				    </select>
+				</li>
+			    </ol>
+			</li>
+			<li>
+			    <label for="showCard">
+				<a href="#" class="tooltip">Pop Up Card:<span>Whether or not to show more detail when a Directory entry is touched</span></a>
+			    </label>
+			    <input id="showCard" name="showCard" type="checkbox" />
+			</li>
+			<li class="card drillDown" style="display: none;">
+			    <ol>
+				<li>
+				    <label for="cardLocation">Location:</label>
+				    <select id="cardLocation" name="cardLocation" class="short">
+					<option value="left">Left</option>
+					<option value="right">Right</option>
+					<option value="top">Top</option>
+					<option value="bottom">Bottom</option>
+					<option value="center" selected="selected">Center</option>
+				    </select>
+				</li>
+				<li>
+				    <label for="cardWidth">Width (pixels):</label>
+				    <input id="cardWidth" name="cardWidth" type="text" class="short" value="700" />
+				</li>
+				<li>
+				    <label for="cardTimeout">Timeout (seconds):</label>
+				    <input id="cardTimeout" name="cardTimeout" type="text" class="short" value="30" />
+				</li>
+				<li>
+				    <label for="cardBorder">Rounded Border:</label>
+				    <input id="cardBorder" name="cardBorder" type="checkbox" checked="checked" />
+				</li>			
+				<li>
+				    <label for="cardBgColor">Background Color:</label>
+				    <input id="cardBgColor" name="cardBgColor" type="text" class="short" value="rgb(255, 255, 255)" />
+				    <div class="colorPicker" data-for="cardBgColor"></div>
+				</li>
+				<li>
+				    <label for="cardImage">
+					<a href="#" class="tooltip">Image Column:<span>Column of the spreadsheet that contains the Image URL to display on the Pop Up Card (e.g. A or AW)</span></a>
+				    </label>
+				    <input id="cardImage" name="cardImage" type="text" class="short" />
+				</li>
+				<li class="cardImage drillDown" style="display: none;">
+				    <ol>					
+					<li>
+					    <label for="cardImageAlign">Alignment:</label>
+					    <select id="cardImageAlign" name="cardImageAlign" class="short">
+						<option value="topLeft">Top Left</option>
+						<option value="center">Center</option>
+						<option value="topRight" selected="selected">Top Right</option>
+					    </select>
+					</li>
+					<li>
+					    <label for="cardImageWidth">Width (pixels):</label>
+					    <input id="cardImageWidth" name="cardImageWidth" type="text" class="short" value="100" />
+					</li>
+					<li>
+					    <label for="cardImagePadding">Padding (pixels):</label>
+					    <input id="cardImagePadding" name="cardImagePadding" type="text" class="short" value="10" />
+					</li>
+				    </ol>
+				</li>
+				<li>
+				    <label for="closeBorderColor">
+					<a href="#" class="tooltip">Close Button Border Color:<span>Color of circle border and ‘X’</span></a>
+				    </label>
+				    <input id="closeBorderColor" name="closeBorderColor" type="text" class="short" value="rgb(255, 255, 255)" />
+				    <div class="colorPicker" data-for="closeBorderColor"></div>
+				</li>
+				<li>
+				    <label for="closeFillColor">
+					<a href="#" class="tooltip">Close Button Fill Color:<span>Color inside of the circle</span></a>
+				    </label>
+				    <input id="closeFillColor" name="closeFillColor" type="text" class="short" value="rgb(119, 119, 119)" />
+				    <div class="colorPicker" data-for="closeFillColor"></div>
+				</li>
+				<li>
+				    <label for="cardTitle">
+					<a href="#" class="tooltip">Title Column:<span>Column of the spreadsheet that the Title text is in (e.g. A or AW)</span></a>
+				    </label>
+				    <input id="cardTitle" name="cardTitle" type="text" class="short" />
+				</li>
+				<li class="cardTitle drillDown" style="display: none;">
+				    <ol>					
+					<li>
+					    <label for="cardTitle_font-style">Font:</label>
+					    <span id="cardTitle_font-style" name="cardTitle_font-style" data-css=".cardTitle_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:46px;}">Arial, 46px, color: rgb(0, 0, 0)</span>
+					    <div class="fontSelector" data-for="cardTitle_font-style"></div>
+					</li>
+					<li>
+					    <label for="cardTitlePadding">Padding (pixels):</label>
+					    <input id="cardTitlePadding" name="cardTitlePadding" type="text" class="short" value="10" />
+					</li>
+				    </ol>
+				</li>
+				<li>
+				    <label for="cardSubtitle">
+					<a href="#" class="tooltip">Subtitle Column:<span>Column of the spreadsheet that the Subtitle text is in (e.g. A or AW)</span></a>
+				    </label>
+				    <input id="cardSubtitle" name="cardSubtitle" type="text" class="short" />
+				</li>
+				<li class="cardSubtitle drillDown" style="display: none;">
+				    <ol>
+					<li>
+					    <label for="cardSubtitle_font-style">Font:</label>
+					    <span id="cardSubtitle_font-style" name="cardSubtitle_font-style" data-css=".cardSubtitle_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:32px;}">Arial, 32px, color: rgb(0, 0, 0)</span>
+					    <div class="fontSelector" data-for="cardSubtitle_font-style"></div>
+					</li>
+					<li>
+					    <label for="cardSubtitlePadding">Padding (pixels):</label>
+					    <input id="cardSubtitlePadding" name="cardSubtitlePadding" type="text" class="short" value="10" />
+					</li>
+				    </ol>
+				</li>
+				<li>
+				    <label for="cardDetail">
+					<a href="#" class="tooltip">Detail Column:<span>Column of the spreadsheet that the Detail text is in (e.g. A or AW)</span></a>
+				    </label>
+				    <input id="cardDetail" name="cardDetail" type="text" class="short" />
+				</li>
+				<li class="cardDetail drillDown" style="display: none;">
+				    <ol>
+					<li>
+					    <label for="cardDetail_font-style">Font:</label>
+					    <span id="cardDetail_font-style" name="cardDetail_font-style" data-css=".cardDetail_font-style{font-family:Arial, Arial, Helvetica, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:28px;}">Arial, 28px, color: rgb(0, 0, 0)</span>
+					    <div class="fontSelector" data-for="cardDetail_font-style"></div>
+					</li>
+					<li>
+					    <label for="cardDetailPadding">Padding (pixels):</label>
+					    <input id="cardDetailPadding" name="cardDetailPadding" type="text" class="short" value="10" />
+					</li>
+				    </ol>
+				</li>
+				<li>
+				    <label for="cardUseDefault">Use Default Card Layout:</label>
+				    <input id="cardUseDefault" name="cardUseDefault" type="checkbox" checked="checked" />
+				</li>
+				<li class="cardLayoutURL drillDown" style="display: none;">
+				    <label for="cardLayoutURL">Layout URL*:</label>
+				    <input id="cardLayoutURL" name="cardLayoutURL" type="text" class="medium" />
+				</li>
+			    </ol>
+			</li>
+			<li>
+			    <label for="useDefault">Use Default Layout:</label>
+			    <input id="useDefault" name="useDefault" type="checkbox" checked="checked" />
+			</li>
+			<li class="layoutURL drillDown" style="display: none;">
+			    <label for="layoutURL">Layout URL*:</label>
+			    <input id="layoutURL" name="layoutURL" type="text" class="long" />
+			</li>
+		    </ol>
+		</form>
+	    </div>
+	    
+	    <link rel="stylesheet" href="https://s3.amazonaws.com/Common-Production/Settings/css/Settings.css" />
+	    
+	    <script src="http://www.google.com/jsapi"></script>
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    
+	    <script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+	    <script type="text/javascript" src="https://s3.amazonaws.com/Gadget-Directory/Directory.min.js"></script>
+	    
+            <script type="text/javascript">
+		var prefs = new gadgets.Prefs(),
+		    directorySettings = null;
+		    
+		google.load("picker", "1");
+                                
+                function init() {
+		    google.setOnLoadCallback(function() {
+			$(function() {
+			    directorySettings = new RiseVision.Directory.Settings();
+			    
+			    gadgets.rpc.register("rscmd_getSettings", directorySettings.getSettings);
+			    gadgets.rpc.register("rscmd_googlePickerCallback", directorySettings.setURL);
+			    gadgets.rpc.register("rscmd_colorPickerCallback", directorySettings.setColor);
+			    gadgets.rpc.register("rscmd_fontSelectorCallback", directorySettings.setFont);
+			    
+			    directorySettings.initSettings();
+			});
+		    });
+                }
+		
+                gadgets.util.registerOnLoadHandler(init); 
+            </script>
+	]]>
+    </Content>
+    <Content type="html">
+        <![CDATA[
+        <style>
+	    * {
+		margin: 0;
+		padding: 0;
+	    }
+	    body {
+		-webkit-user-select:	none;
+		-khtml-user-select: 	none;
+		-moz-user-select: 	none;
+		-o-user-select: 	none;
+		user-select: 		none;
+	    }
+	    div#container {
+		width: 	100%;
+		height: 100%;
+	    }
+	    .even {
+		background-color: __UP_rowColor__;
+	    }
+	    .odd {
+		background-color: __UP_altRowColor__;
+	    }
+	    .indicator, .arrow {
+		color:	__UP_headingSortColor__;
+	    }	    
+	    .sorting_asc, .sorting_desc {
+		color: 			__UP_headingColor__ !important;
+		background-color:	__UP_headingBgColor__;
+	    }
+	    /*  Pop Up Card */
+	    #card.default {
+		display:none;
+	    }
+	    .default.cardBorder {
+		-webkit-border-radius: 		12px;
+		border-radius: 			12px;
+		-moz-background-clip: 		padding;
+		-webkit-background-clip:	padding-box;
+		background-clip: 		padding-box;
+	    }
+	    .default #close {
+		font-size: 		1.5em;
+		font-weight: 		900;
+		float: 			right;
+		width: 			2em; 
+		height: 		2em;
+		margin:			0.5em;
+		text-align: 		center;
+		line-height: 		1.4em;
+		border: 		0.3em solid;
+		-moz-box-shadow:    	-3px 3px 8px black;
+		-webkit-box-shadow: 	-3px 3px 8px black;
+		box-shadow:         	-3px 3px 8px black;
+		text-decoration: 	none;
+		cursor: 		pointer;
+	    }
+	    .default #image {
+		clear: both;		
+	    }
+	    .default #image.right {
+		float: 		right;
+	    }
+	    .default #image.left {
+		float: 		left;
+	    }
+	    .default #image.center {
+		width: 		100%;
+		text-align:	center;
+	    }
+	    .default #image img {
+		max-width: 100%;
+	    }
+	    .default #subtitle {
+		clear: left;
+	     }
+        </style>
+    
+	<div id="container">
+	    <div id="scrollContainer"></div>
+	    <div id="card" class="default">		
+		<a id="close" href="#">X</a>
+		<h1 id="title" class="cardTitle_font-style"></h1>
+		<h2 id="subtitle" class="cardSubtitle_font-style"></h2>
+		<div id="image"></div>
+		<p id="detail" class="cardDetail_font-style"></p>
+	    </div>
+	</div>
+	
+	<link rel="stylesheet" href="https://s3.amazonaws.com/Common-Production/AlphaNav/css/AlphaNav.css" />
+	
+	<script src="http://www.google.com/jsapi"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    	
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/dataTables/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/AlphaNav/AlphaNav.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/InfiniteScroll/InfiniteScroll.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/bPopup/jquery.bpopup-0.7.0.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Common-Production/Common/RiseVision.Common.min.js"></script>
+	<script type="text/javascript" src="https://s3.amazonaws.com/Gadget-Directory/Directory.min.js"></script>
+	
+        <script type="text/javascript">
+            var prefs = new gadgets.Prefs(),
+		controller = null;
+	    
+	    google.load("gdata", "1");
+	    
+	    //Issue 1056 - Disable right-click.
+	    window.oncontextmenu = function() {
+		return false;
+	    };
+	    
+	    //Add Analytics code.
+	    var _gaq = _gaq || [];
+	    
+	    _gaq.push(['_setAccount', 'UA-41395348-12']);
+	    _gaq.push(['_trackPageview']);
+	  
+	    (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	    })();
+	    
+            function init() {
+                var id = prefs.getString("id"),					
+		    bgColor = prefs.getString("bgColor");
+		
+		document.body.onmousedown = function() { return false; }
+		
+                if (bgColor) {
+		    document.body.style.backgroundColor = bgColor;
+                }
+		
+		if (id !== null && id != "") {
+		    gadgets.rpc.register("rscmd_play_" + id, play);
+		    gadgets.rpc.register("rscmd_pause_" + id, pause);
+		    gadgets.rpc.register("rscmd_stop_" + id, stop);
+		}
+				
+		google.setOnLoadCallback(function() {
+		    controller = new RiseVision.Directory.Controller();
+		    
+		    $(window).resize(function() {
+			controller.onresize();
+		    });
+		    
+		    gadgets.rpc.register("rsparam_set_" + id, controller.getAdditionalParams);
+		    gadgets.rpc.call("", "rsparam_get", null, id, "additionalParams");
+		});
+            }
+	    
+	    function play() {
+		controller.play();
+	    }
+	    
+	    function pause() {
+		controller.pause();
+	    }
+	    
+            // sends "READY" event to the Viewer
+            function readyEvent() {
+                gadgets.rpc.call('', 'rsevent_ready', null, prefs.getString("id"), true, false, true, true, true);
+            }
+            
+            // sends "DONE" event to the Viewer
+            function doneEvent() {
+                gadgets.rpc.call('', 'rsevent_done', null, prefs.getString("id"));
+            }
+            
+	    $(document).ready(function() {
+		init();
+	    });
+        </script>]]>
+</Content>
+</Module>

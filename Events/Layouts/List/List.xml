@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+	<![CDATA[
+	    #eventsContainer {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	    }
+	    #eventsContainer ul {
+		list-style-type: none;
+		margin: 0;
+	    }
+	    #scroller {
+		padding: 0 20px;
+	    }
+	    .day {
+		padding-top: 10px;
+	    }
+	    .events {
+		padding: 10px 20px 0px 20px;
+		border-bottom: 1px solid gray;
+	    }
+	    .scrollContainer {
+		position: absolute;
+		overflow: hidden;
+		margin: 0px;
+		left: 0;
+		bottom: 0;
+		right: 0;
+	    }
+	]]>
+    </Style>
+    <Layout>
+	<Navigation>
+	    <![CDATA[
+	    <div id="eventsContainer" class="scrollContainer">
+		<div class="content">
+		    <ul id="scroller">
+			<li class="eventsContainer">
+			    <div class="day day_font-style"></div>
+			    <ul class="events">
+			    </ul>
+			</li>
+			<li class="eventsContainer">
+			    <div class="day day_font-style"></div>
+			    <ul class="events">
+			    </ul>
+			</li>
+			<li class="eventsContainer">
+			    <div class="day day_font-style"></div>
+			    <ul class="events">
+			    </ul>
+			</li>
+			<li class="eventsContainer">
+			    <div class="day day_font-style"></div>
+			    <ul class="events">
+			    </ul>
+			</li>
+			<li class="eventsContainer">
+			    <div class="day day_font-style"></div>
+			    <ul class="events">
+			    </ul>
+			</li>
+			<li class="eventsContainer">
+			    <div class="day day_font-style"></div>
+			    <ul class="events">
+			    </ul>
+			</li>
+			<li class="eventsContainer">
+			    <div class="day day_font-style"></div>
+			    <ul class="events">
+			    </ul>
+			</li>
+		    </ul>
+		</div>
+	    </div>
+	    ]]>
+	</Navigation>
+	<Content>
+	    <![CDATA[
+	    <li class="event">
+		<article>
+		    <span class="time location_font-style"></span>
+		    <span class="title title_font-style"></span><br />
+		    <span class="location location_font-style"></span>
+		    <p class="description description_font-style"></p>
+		</article>
+	    </li>
+	    ]]>
+	</Content>
+    </Layout>
+</Template>
+

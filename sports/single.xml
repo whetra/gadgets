@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <Style>
+  <![CDATA[
+  * {
+      box-sizing: border-box;
+  }
+  #container {
+      padding: 1em;
+  }
+  #content {
+      width: 100%;
+      height: 100%;
+      -webkit-transition: opacity 0.6s ease-in-out;
+      -moz-transition: opacity 0.6s ease-in-out;
+      -o-transition: opacity 0.6s ease-in-out;
+      transition: opacity 0.6s ease-in-out;
+  }
+  .stats {
+      width: 100%;
+      height: 40%;
+      position: relative;
+      }
+      .stats > div {
+    position: absolute;
+    bottom: 0;
+    padding-bottom: 1em;
+      }
+      .stats > div:nth-child(1) {
+    width: 25%;
+      }
+      .stats > div:nth-child(2) {
+    width: 75%;
+    right: 0;
+      }
+  .status {
+      float: left;
+      width: 60%;
+  }
+  .overUnder {
+      float: left;
+      width: 40%;
+      text-align: right;
+  }
+  .game {
+      width: 100%;
+      height: 60%;
+  }
+  .sportLogoContainer {
+      width: 25%;
+      height: 100%;
+      float: left;
+      background-size: 100% 100%;
+  }
+  .teams {
+      width: 100%;
+      height: 100%;
+  }
+  .home, .visitor {
+      height: 50%;
+      padding-bottom: 0.5em;
+  }
+  .home {
+      /*padding: 1em 0 0 0;*/
+  }
+  .visitorName, .homeName {
+      padding: 0 0 0 1em;
+      float: left;
+      height: 100%;
+  }
+  .visitorName.noLogo, .homeName.noLogo {
+      width: 70%;
+  }
+  .visitorSpread, .visitorRecord, .homeSpread, .homeRecord {
+      float: right;
+      height: 100%;
+      text-align: right;
+  }
+  .noOdds {
+      width: 100%;
+      text-align: right;
+  }
+  p {
+      margin: 0;
+      padding: 0;
+  }
+  .fadeOut {
+      opacity: 0;
+  }
+  .fadeIn {
+      opacity: 1;
+  }
+  ]]>
+    </Style>
+    <Layout>
+  <![CDATA[
+  <div id="content">
+      <div class="stats">
+    <div id="spacer"></div>
+    <div>
+        <div class="status game_font-style"></div>
+        <div class="overUnder game_font-style"></div>
+    </div>
+      </div>
+      <div class="game">
+    <div class="sportLogoContainer"></div>
+    <div class="teams">
+        <div class="visitor">
+      <div class="visitorName team_font-style"></div>
+      <div class="visitorSpread team_font-style"></div>
+      <div class="visitorRecord team_font-style"></div>
+        </div>
+        <div class="home">
+      <div class="homeName team_font-style"></div>
+      <div class="homeSpread team_font-style"></div>
+      <div class="homeRecord team_font-style"></div>
+        </div>
+    </div>
+      </div>
+  </div>
+  ]]>
+    </Layout>
+</Template>

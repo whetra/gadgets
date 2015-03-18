@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+	<ModulePrefs title="Rise Vision Dashboard Failed Display Count Gadget" title_url="http://www.risevision.com/help/gadgets/gadget-help-files/rise-vision-dashboard-failed-displays-count/">
+		<Require feature="rpc" />
+		<Optional feature="rise-api">
+			<Param name="reports_ready" />
+		</Optional>
+	</ModulePrefs>
+	<UserPref name="id" display_name="ID" default_value="" datatype="hidden" />
+	<UserPref name="rsH" display_name="Container Height" default_value="100%" datatype="hidden" />
+	<UserPref name="rsW" display_name="Container Width" default_value="100%" datatype="hidden" />
+	<UserPref name="useDefaultKey" display_name="Show data for the Company that the logged in User or authenticated Display belongs to" required="false" default_value="true" datatype="bool" /> 
+	<UserPref name="authKey" display_name="Or enter the Authentication Key for the Company you want to show data for" required="false" default_value="" /> 
+  	<UserPref name="scope" display_name="Show number of Failed Displays for" default_value="0" datatype="enum" required="false"> 
+    	<EnumValue value="0" display_value="your Company"/> 
+    	<EnumValue value="1" display_value="all Sub-Companies below your Company"/>
+  	</UserPref>
+  		<!-- appearance -->
+	<UserPref name="backColor" display_name="Background Color" required="false" default_value="transparent" /> 
+ 	<UserPref name="titleText" display_name="Title" required="false" default_value="" /> 
+	<UserPref name="title_font-style" display_name="Title Font" datatype="string" default_value=".title_font-style{font-family:Verdana, Verdana, Geneva, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:24px;}" />
+	<UserPref name="number_font-style" display_name="Number Font" datatype="string" default_value=".number_font-style{font-family:Verdana, Verdana, Geneva, sans-serif;color:rgb(0, 0, 0);font-weight:normal;font-size:20px;}" />
+  	<UserPref name="_table_query_url" display_name="Data Source URL" required="false" default_value="" datatype="hidden"/>
+  	<UserPref name="_table_query_refresh_interval" display_name="Data Refresh Interval (minutes)" default_value="300" datatype="enum" required="false"> 
+    	<EnumValue value="0" display_value="Do not refresh"/> 
+    	<EnumValue value="60" display_value="1"/> 
+    	<EnumValue value="300" display_value="5"/> 
+    	<EnumValue value="1800" display_value="30"/> 
+    	<EnumValue value="3600" display_value="60"/> 
+  	</UserPref>
+  	<!-- DO NOT DELETE -->
+  	<!--	<UserPref name="serverApp" display_name="Target" required="false" default_value="rvastats" datatype="enum">-->
+	<!--	    <EnumValue value="gv-dot-rdncore-test" display_value="Test"/> -->
+	<!--    	<EnumValue value="rvastats" display_value="Production"/>-->
+	<!--  	</UserPref>-->
+	<Content type="html">
+    	<![CDATA[
+    	<style type="text/css">
+			body {
+	        	background-color: transparent;
+	        }
+	        #contentbox {
+		        width: __UP_rsW__;
+		        height: __UP_rsH__;
+		        vertical-align : middle;
+		        display : table-cell;
+		        text-align: center;
+		        overflow: auto;
+		        margin-left: auto;
+		        margin-right: auto;
+	        }
+	        #titlebox {
+		        text-align: center;
+	        }
+			
+			__UP_title_font-style__
+			__UP_number_font-style__
+			
+        </style>
+        
+        <div id="titlebox" class="title_font-style"></div>
+  		<div id="contentbox" class="number_font-style"><img src="http://www.google.com/ig/images/spinner.gif" /></div> 
+    	
+    	<!-- Load the Google common loader, that is later used to load the Visualization API. --> 
+  		<script src="http://www.google.com/jsapi" type="text/javascript"></script> 
+ 		
+  		<script type="text/javascript"> 
+  			
+    		var gadgetHelper = null;
+    		var prefs = new gadgets.Prefs(); // User preferences
+    		var id = prefs.getString("id") == null ? "" : prefs.getString("id");
+    		var serverApp = prefs.getString("serverApp") == null || prefs.getString("serverApp") == "" ? "rvastats" : prefs.getString("serverApp");
+    		var defaultKey = null;
+    		
+    		var backgroundColor = prefs.getString("backColor");
+    		if (backgroundColor !== null && backgroundColor != "") {
+            	document.body.style.background = backgroundColor;
+            }
+    		
+    		gadgets.util.registerOnLoadHandler(loadVisualizationAPI);
+ 
+    		/*  Load the Google Visualization API  */
+    		function loadVisualizationAPI() {
+    		
+      			google.load("visualization", "1");
+      			
+      			if (prefs.getBool("useDefaultKey")) {
+    		
+	    			// get the key from Viewer
+	    			google.setOnLoadCallback(requestKey);
+	    		
+	    		} else {
+	
+	    			// go straight to requesting the data 
+	    			google.setOnLoadCallback(sendQuery);
+	    		} 
+    		}
+    		
+    		//  request default key from Viewer 
+    		function requestKey() {
+				if (id != null && id != "") {
+
+					gadgets.rpc.register("rsparam_set_" + id, receiveKey);
+					gadgets.rpc.call('', 'rsparam_get', null, id, "CompanyAuthKey");
+
+		        } else {
+		        
+		        	var tableDiv = _gel('contentbox');
+                    tableDiv.innerHTML = "Unable to communicate with Viewer (ID is not defined).";
+		        }
+    		}
+    		
+    		// callback for receiving the default key from Viewer  
+    		function receiveKey(name, value) {
+            	if (name=='CompanyAuthKey') {
+            		defaultKey = value;
+            		sendQuery();
+            	}
+            }
+ 
+    		/**
+     		* Create a query from the user prefs, and then send it to the data source.
+     		* This method is called once the visualization API is fully loaded.
+     		* Note that in the last line, a callback function is specified to be
+     		* called once the response is received from the data source.
+     		*/
+    		function sendQuery() {
+    		
+      			var titleDiv = _gel('titlebox');
+      			var contentDiv = _gel('contentbox');
+      			var totalHeight = prefs.getInt("rsH") != null && prefs.getInt("rsH") > 0 && prefs.getString("rsH").indexOf('%') == -1 ? prefs.getInt("rsH") : document.body.clientHeight;
+      			var totalWidth = prefs.getInt("rsW") != null && prefs.getInt("rsW") > 0 && prefs.getString("rsW").indexOf('%') == -1 ? prefs.getInt("rsW") : document.body.clientWidth;
+      			
+      			if (prefs.getString("titleText") != null && prefs.getString("titleText") != '') {
+      				
+      				titleDiv.innerHTML = prefs.getString("titleText");
+   
+      				var contentHeight = totalHeight - titleDiv.clientHeight;
+      				contentDiv.style.height = contentHeight + 'px';
+
+      			} else {
+      			
+      				titleDiv.style.display = 'none';
+      				contentDiv.style.height = totalHeight + 'px';
+      			}
+
+      			contentDiv.style.width = totalWidth + 'px';
+      			 			
+      			var usedKey = prefs.getBool('useDefaultKey') ? defaultKey : prefs.getString('authKey');
+      			usedKey = (usedKey == null || usedKey == '') ? 'no-key' : usedKey; 
+      			
+      			var urlPath = (prefs.getInt('scope') == 1 ? '/companies' : '') +'/displays/failed/count';
+
+      			var srvUrl = 'https://' + serverApp + '.appspot.com/v1/gv/' + usedKey + urlPath;
+				//prefs.set('_table_query_url', srvUrl);
+				
+      			gadgetHelper = new google.visualization.GadgetHelper();
+      			//var query = gadgetHelper.createQueryFromPrefs(prefs);
+      			var query = new google.visualization.Query(srvUrl);
+      			query.setRefreshInterval(prefs.getInt("_table_query_refresh_interval"));
+      			query.send(handleQueryResponse);
+
+    		}
+ 
+    		/**
+     		* Query response handler function.
+     		* Called by the Google Visualization API once the response is received.
+		  	* Takes the query response and formats it as a table.
+		    */
+    		function handleQueryResponse(response) {
+      		
+      			var container = _gel('contentbox');
+      			
+	      		// Use the visualization GadgetHelper class to validate the data, and for error handling.
+	      		if (!gadgetHelper.validateResponse(response)) {
+                    container.innerHTML = "Error receiving data from the data source.";
+	        		return;
+
+	      		};
+	      		
+	      		var data = response.getDataTable();
+	      
+	      		container.innerHTML = data.getFormattedValue(0,0);
+	      		
+	      		readyEvent();	      		
+	      		
+    		};
+    		
+    		//Send "READY" event to the Viewer.
+            function readyEvent() {
+            	gadgets.rpc.call('', 'rsevent_ready', null, id, false, false, false, true, false);
+            }
+                                    
+            function _gel(id) {
+            	return document.getElementById(id);
+            }
+		</script>
+        ]]>
+	</Content>
+</Module>
