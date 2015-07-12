@@ -33,6 +33,7 @@ PhotoAlbum.prototype.initialize = function() {
 	 }).appendTo("head");
 	
 	$.getScript("https://s3.amazonaws.com/Gadget-Photo-Album/SlideShow/js/SlideShow.min.js", function() {
+       self.initializeSlideShow();
 	    self.loadFeed();		
 	});  
     }    
@@ -44,6 +45,7 @@ PhotoAlbum.prototype.initialize = function() {
 	}).appendTo("head");
 	
 	$.getScript("https://s3.amazonaws.com/Gadget-Photo-Album/Collage/js/Collage.min.js", function() {
+       self.initializeCollage();
 	    self.loadFeed();		
 	});
     }
@@ -51,6 +53,20 @@ PhotoAlbum.prototype.initialize = function() {
 	this.loadFeed();
     }
 }
+
+PhotoAlbum.prototype.initializeSlideShow = function() {
+    if (!window.slideShow) {
+        window.slideShow = new SlideShow(this.onLastPhotoShown);
+        window.slideShow.initialize();
+    }
+}
+PhotoAlbum.prototype.initializeCollage = function() {
+    if (!window.collage) {
+        window.collage = new Collage(this.onLastPhotoShown);
+        window.collage.initialize();
+    }
+}
+
 PhotoAlbum.prototype.loadFeed = function() {
     var self = this,
 	params = {};
@@ -83,12 +99,12 @@ PhotoAlbum.prototype.onFeedLoaded = function(obj) {
     
     if (obj.data && obj.data.getElementsByTagName("item").length > 0) {
 	this.entries = obj.data.getElementsByTagName("item");
-	this.loadPhotos();
     }
     else {
 	console.log("This feed has no items.");
-	readyEvent();
+	this.entries = new Array();
     }
+	this.loadPhotos();
 }
 PhotoAlbum.prototype.loadPhotos = function() {
     var $group, $content, title, description, url, imageProps
@@ -101,6 +117,19 @@ PhotoAlbum.prototype.loadPhotos = function() {
     this.oldImages = this.images;
     this.images = new Array();
     this.captions = new Array();
+
+    if (this.entries.length == 0) {
+        this.imageCount = 0;
+        this.isStarted = false;
+        this.isFeedLoaded = false;
+        if (this.isLoading) {
+            this.isLoading = false;
+            readyEvent();
+        } else {
+            doneEvent();
+        }
+        return;
+    }
 
     $.each(this.entries, function(index, value) {
 	$group = $(this).find("group");
@@ -248,11 +277,6 @@ PhotoAlbum.prototype.loadSlideShow = function(src, index) {
 		}
 		//Issue 920 End
 		
-		if (!window.slideShow) {
-		    window.slideShow = new SlideShow(self.onLastPhotoShown);
-		    window.slideShow.initialize();
-		}
-
 		if (self.isLoading) {
 		    window.slideShow.addImage(self.images[index]);
 		}
@@ -367,11 +391,6 @@ PhotoAlbum.prototype.loadCollage = function(src, index) {
 		self.images[index].height = newHeight;
 	    }
 	    //Issue 920 End
-	    
-	    if (!window.collage) {
-		window.collage = new Collage(self.onLastPhotoShown);
-		window.collage.initialize();
-	    }
 	    
 	    if (self.isLoading) {
 		window.collage.addImage(self.images[index]);

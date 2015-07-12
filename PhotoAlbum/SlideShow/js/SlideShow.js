@@ -3,6 +3,7 @@ function SlideShow(onLastPhotoShown) {
     
     this.duration = prefs.getInt("duration") * 1000 - 1200;
     this.interactivityTimeout = prefs.getInt("interactivityTimeout");
+    this.totalImagesPrevious = 0;
     this.totalImages = 0;
     this.current = 0;
     this.nextIndex = 0;
@@ -228,8 +229,15 @@ SlideShow.prototype.resumeTimer = function() {
 	if (this.isLoading) {
 	    this.isLoading = false;
 	    
-	    //Issue 795 - Only fade out if photo is not already in the middle of transitioning.
-	    if (!this.isFadingIn && !this.isFadingOut) {
+	   //Issue 795 - Only fade out if photo is not already in the middle of transitioning.
+	  if (this.totalImages == 0) {
+          this.transitionOut(); // handles 0 images too
+      } else if (this.totalImagesPrevious == 0) {
+          // there were no previous photo's, so no fade out and don't remove first, just show next photo
+          if (!self.isPaused) {
+              self.showNextPhoto(false);
+          }
+      } else if (!this.isFadingIn && !this.isFadingOut) {
 		this.isFadingOut = true;
 		
 		$first.fadeOut("slow", function() {
@@ -247,6 +255,8 @@ SlideShow.prototype.resumeTimer = function() {
 	    //Issue 795 - Transition previous photo out before showing next one.
 	    if ($(".visible").length > 0) {
 		this.transitionOut();
+        } else if (this.totalImages == 0) {
+            this.transitionOut(); // handles 0 images too
 	    }
 	    else {
 		this.showNextPhoto(false);
@@ -297,8 +307,15 @@ SlideShow.prototype.transitionOut = function() {
     this.showPhotoTimer = null;
     
     //Issue 713 - Need to check if totalImages is not 0.
-    if (this.totalImages > 0 && (this.current >= this.totalImages - 1)) {
+    if (this.totalImages == 0) {
+        this.totalImagesPrevious = 0;
+        this.timeLeft = 0;
+        this.current = 0;
+        this.isLoading = true;
+        this.onLastPhotoShown.call(window.photoAlbum); //Fire callback to refresh feed.
+    } else if (this.totalImages > 0 && (this.current >= this.totalImages - 1)) {
 	//Remove all images except the one that is currently showing. New images will be added as they are loaded.
+	this.totalImagesPrevious = this.totalImages;
 	$("#slideshow li:not(:last)").remove();
 	this.timeLeft = 0;
 	this.current = 0;
