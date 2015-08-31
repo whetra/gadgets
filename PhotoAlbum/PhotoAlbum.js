@@ -92,19 +92,21 @@ PhotoAlbum.prototype.onFeedLoaded = function(obj) {
     this.isFeedLoaded = true;
     
     //This will return all items, so we need to limit to Maximum Images setting.
-    for (var i = obj.data.getElementsByTagName("item").length - 1; i >= this.maxImages; i--) {
-	item = obj.data.getElementsByTagName("item")[i];
-	item.parentNode.removeChild(item);
+    if (obj.data && obj.data.getElementsByTagName("item").length > 0) {
+      for (var i = obj.data.getElementsByTagName("item").length - 1; i >= this.maxImages; i--) {
+        item = obj.data.getElementsByTagName("item")[i];
+        item.parentNode.removeChild(item);
+      }
     }
     
     if (obj.data && obj.data.getElementsByTagName("item").length > 0) {
-	this.entries = obj.data.getElementsByTagName("item");
+      this.entries = obj.data.getElementsByTagName("item");
     }
     else {
-	console.log("This feed has no items.");
-	this.entries = new Array();
+      console.log("This feed has no items.");
+      this.entries = new Array();
     }
-	this.loadPhotos();
+    this.loadPhotos();
 }
 PhotoAlbum.prototype.loadPhotos = function() {
     var $group, $content, title, description, url, imageProps
